@@ -153,6 +153,39 @@ button.mini-stat:active{transform:scale(.98)}
 .accounting-stats{margin:6px 0 10px}.stat-warn{background:#fff6df}.stat-warn b{color:#a56e08}
 .changed-payment{border:1px solid #f0d18a;background:#fffdf8}
 
+
+.account-alert.recovery{background:#eefaf4;border:1px solid #cceedd}
+.busy-slot{border-color:#f1d18c;background:#fffaf0}
+.status-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:10px 0 4px}
+.compact-status{margin-top:10px}.compact-status .smallbtn{min-width:0}
+.month-lock{padding:13px 14px;border-radius:17px;background:#eef1f7;border:1px solid #dde2ec;margin:10px 0;color:#394257}
+.month-lock b{display:block;font-size:13px}.month-lock small{display:block;color:var(--muted);font-size:10px;line-height:1.4;margin-top:4px}
+.accounting-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 10px}
+.accounting-grid .stat{padding:10px 5px}.accounting-grid .stat b{font-size:15px}.accounting-grid .stat small{font-size:9px}
+.payment-total-line{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:#f7f8fb;border-radius:15px;margin:10px 0;color:var(--muted);font-size:12px}
+.payment-total-line b{color:var(--ink);font-size:16px}
+.payment-total-big{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-radius:18px;background:linear-gradient(135deg,#171d2f,#343d64);color:white;margin:12px 0}
+.payment-total-big span{font-size:12px;opacity:.8}.payment-total-big b{font-size:22px}
+.smallbtn.lock{background:#eef0f6;color:#394257}.smallbtn.unlock{background:#e9f8f1;color:#11825a}
+
+.participant-row{background:#f8f9fc;border:1px solid var(--line);border-radius:17px;padding:11px 12px;margin:8px 0}
+.participant-main{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px}
+.participant-main b{font-size:13px}.participant-main small{font-size:10px;color:var(--muted);text-align:right}
+.participant-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.participant-actions .smallbtn{padding:9px 5px;font-size:11px;min-height:44px}
+.smallbtn.warn-mini{background:#fff4d8;color:#a66d00}.smallbtn.danger-mini{background:#ffecef;color:#c63d50}
+.range30{display:flex;flex-direction:column;gap:9px}
+.range-day{border:1px solid var(--line);border-radius:19px;background:#fbfcfe;overflow:hidden}
+.range-day.today-range{border-color:#cfcfff;background:#f8f8ff}
+.range-head{width:100%;border:0;background:transparent;display:grid;grid-template-columns:46px 1fr auto;gap:10px;align-items:center;text-align:left;padding:10px 12px;min-height:58px;color:var(--ink)}
+.range-date{width:42px;height:42px;border-radius:14px;background:#eef0f6;display:flex;flex-direction:column;align-items:center;justify-content:center}.today-range .range-date{background:#e7e7ff;color:#5052d5}
+.range-date b{font-size:14px;line-height:1}.range-date small{font-size:9px;margin-top:4px;text-transform:uppercase;color:var(--muted);font-weight:900}
+.range-title{min-width:0}.range-title b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.range-title small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.range-lessons{border-top:1px solid var(--line);background:#fff}
+.range-lesson{width:100%;border:0;border-bottom:1px solid var(--line);background:#fff;display:grid;grid-template-columns:52px 1fr auto;gap:9px;align-items:center;text-align:left;padding:10px 12px;min-height:58px;color:var(--ink)}
+.range-lesson:last-child{border-bottom:0}.range-time{font-size:12px;font-weight:900;color:#4f50d8}.range-lesson>span:nth-child(2){min-width:0}.range-lesson>span:nth-child(2) b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.range-lesson>span:nth-child(2) small{display:block;color:var(--muted);font-size:9px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.range-mode{font-size:9px;font-weight:900;padding:6px 7px;border-radius:999px;white-space:nowrap}
+
 </style>
 </head>
 <body>
@@ -194,7 +227,7 @@ button.mini-stat:active{transform:scale(.98)}
   <section id="payments" class="page">
     <div class="topbar"><div class="topbar-left"><button class="backbtn" onclick="appBack()" aria-label="Indietro">‹</button><h2>Pagamenti</h2></div><button class="iconbtn" onclick="openPaymentReminder(true)">🔔</button></div>
     <div id="monthLine" class="monthline"></div>
-    <div class="note"><b>Contabilità sicura:</b> vengono conteggiate solo le lezioni confermate come <b>Svolte</b>. Le lezioni passate non verificate restano evidenziate e non spariscono.</div>
+    <div class="note"><b>Contabilità sicura:</b> vengono conteggiate le lezioni <b>Svolte</b> e, solo se scelto da te, le <b>Assenze conteggiate</b>. Recuperi, annullate e lezioni da verificare non entrano nel totale.</div>
     <div id="paymentSummary"></div>
     <div id="paymentsList"></div>
   </section>
@@ -212,7 +245,7 @@ button.mini-stat:active{transform:scale(.98)}
 <div class="overlay" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 
-<script src="./app.js?v=6.1"></script>
+<script src="./app.js?v=7.1"></script>
 
 <script>
 if ('serviceWorker' in navigator) {
