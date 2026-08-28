@@ -44,3 +44,9 @@ CONTABILITÀ
 - Il totale finale resta sempre libero per sconti o accordi particolari.
 - Stato pagamento: Da inviare / Non pagato / Pagato.
 - Esportazione CSV mensile disponibile.
+
+
+V7.2 — ORARI FISSI
+- Orari selezionabili: 09:30–13:30 e 15:00–20:30, a step di 30 minuti.
+- Rimossi tutti gli altri orari dalla creazione e modifica delle lezioni.
+- Rimossa la modifica degli orari dalle Impostazioni.

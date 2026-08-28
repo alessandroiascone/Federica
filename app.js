@@ -15,7 +15,7 @@ function defaultData(){
     lessons:[],
     payments:{},
     monthClosures:{},
-    settings:{start:'14:00',end:'21:00',step:30,dadLink:'https://meet.google.com/'},
+    settings:{start:'09:30',end:'20:30',step:30,dadLink:'https://meet.google.com/'},
     meta:{schema:8,createdAt:new Date().toISOString(),lastBackupAt:null,migratedLegacy:false}
   };
 }
@@ -71,7 +71,7 @@ function migrateData(){
   data.lessons=Array.isArray(data.lessons)?data.lessons:[];
   data.payments=data.payments&&typeof data.payments==='object'?data.payments:{};
   data.monthClosures=data.monthClosures&&typeof data.monthClosures==='object'?data.monthClosures:{};
-  data.settings=Object.assign({start:'14:00',end:'21:00',step:30,dadLink:'https://meet.google.com/'},data.settings||{});
+  data.settings=Object.assign({start:'09:30',end:'20:30',step:30,dadLink:'https://meet.google.com/'},data.settings||{});data.settings.start='09:30';data.settings.end='20:30';data.settings.step=30;
   data.meta=Object.assign({schema:8,lastBackupAt:null},data.meta||{});
   data.students.forEach(s=>{
     if(typeof s.active==='undefined')s.active=true;
@@ -442,7 +442,7 @@ function renderWizard(){
     for(let i=0;i<7;i++){const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i),k=dateKey(d);opts.push(`<button class="choice daychoice ${wizard.date===k?'selected':''}" onclick="wizard.date='${k}';renderWizard()"><b>${i===0?'Oggi':days[d.getDay()]}</b><small>${d.getDate()} ${months[d.getMonth()].slice(0,3)}</small></button>`)}
     replaceModal(`${wizardDots()}<h2>Scegli il giorno</h2><p class="sub">${isSingleMonthlyWizard()?'Alunno mensile: quota già impostata. Dopo giorno e ora sceglierai sempre DAD o presenza.':'Puoi anche registrare una lezione dimenticata scegliendo una data passata.'}</p><div class="choices">${opts.join('')}</div><div class="field"><label>Altra data / lezione passata</label><input class="input" type="date" value="${wizard.date}" onchange="wizard.date=this.value"></div><button class="cta" onclick="wizardNextDate()">Continua</button>`);
   } else if(wizard.step===2){
-    const times=makeTimes(data.settings.start,data.settings.end,data.settings.step),monthlySingle=isSingleMonthlyWizard(),st=monthlySingle?studentById(wizard.studentIds[0]):null;
+    const times=allowedLessonTimes(),monthlySingle=isSingleMonthlyWizard(),st=monthlySingle?studentById(wizard.studentIds[0]):null;
     replaceModal(`${wizardDots()}<h2>Scegli l'orario</h2><p class="sub">${monthlySingle?`Piano mensile: la quota è già impostata. Dopo l’orario scegli DAD o presenza. Durata abituale: ${durationLabel(Number(st?.monthlyDuration)||60)}.`:'Fasce ogni 30 minuti. Gli slot occupati restano selezionabili per lezioni cumulative o parallele.'}</p><div class="choices">${times.map(t=>{const count=data.lessons.filter(l=>l.date===wizard.date&&l.status!=='cancelled'&&timeRangesOverlap(t,wizard.duration,l.time,l.duration)).length;return `<button class="choice timechoice ${wizard.time===t?'selected':''} ${count?'busy-slot':''}" onclick="wizard.time='${t}';renderWizard()"><b>${t}</b><small>${count?count+' lezione/i sovrapposta/e':'libero'}</small></button>`}).join('')}</div>${monthlySingle?'':`<div class="field"><label>Durata lezione</label><select class="input" onchange="wizard.duration=Number(this.value)">${[30,60,90,120,150,180].map(v=>`<option value="${v}" ${wizard.duration===v?'selected':''}>${durationLabel(v)}</option>`).join('')}</select></div>`}<button class="cta" onclick="wizardNextTime()">Continua</button>`);
   } else if(wizard.step===3){
     replaceModal(`${wizardDots()}<h2>DAD o presenza?</h2><p class="sub">${allWizardStudentsMonthly()?'Per gli alunni mensili la modalità va scelta a ogni lezione.':'La modalità verrà riportata nel registro e nei messaggi.'}</p><div class="choices"><button class="choice ${wizard.mode==='presence'?'selected':''}" onclick="wizard.mode='presence';renderWizard()">🏠<br>Presenza</button><button class="choice ${wizard.mode==='dad'?'selected':''}" onclick="wizard.mode='dad';renderWizard()">💻<br>DAD</button></div>${wizard.mode==='dad'?`<div class="field"><label>Link DAD</label><input class="input" value="${esc(data.settings.dadLink||'')}" oninput="data.settings.dadLink=this.value"></div>`:''}<button class="cta" onclick="wizardNextMode()">Continua</button>`);
@@ -562,6 +562,7 @@ function confirmWizard(){
   commitWizardLessons(false);
 }
 function makeTimes(start,end,step){let [sh,sm]=start.split(':').map(Number),[eh,em]=end.split(':').map(Number),a=[],m=sh*60+sm,e=eh*60+em;for(;m<=e;m+=step)a.push(`${pad(Math.floor(m/60))}:${pad(m%60)}`);return a}
+function allowedLessonTimes(){return [...makeTimes('09:30','13:30',30),...makeTimes('15:00','20:30',30)]}
 function durationLabel(v){if(v<60)return `${v} min`;const h=Math.floor(v/60),m=v%60;return m?`${h}h ${m}m`:`${h} ${h===1?'ora':'ore'}`}
 function fmtHours(v){return `${Number(v.toFixed(2)).toString().replace('.',',')}h`}
 function rateLabel(type){return RATE_LABELS[type]||'Tariffa da impostare'}
@@ -695,7 +696,7 @@ function startRecovery(id){
 }
 function openLessonEdit(id){
   const l=data.lessons.find(x=>x.id===id);if(!l)return;
-  const times=makeTimes('08:00','22:00',30),allMonthly=lessonMonthlyIds(l).length===l.studentIds.length&&l.studentIds.length>0;
+  const times=allowedLessonTimes(),allMonthly=lessonMonthlyIds(l).length===l.studentIds.length&&l.studentIds.length>0;
   showModal(`<h2>Modifica lezione</h2><p class="sub">Ogni modifica resta recuperabile dalla cronologia di sicurezza.</p><div class="field"><label>Alunni</label>${activeStudents().concat(archivedStudents().filter(st=>l.studentIds.includes(st.id))).filter((st,i,a)=>a.findIndex(x=>x.id===st.id)===i).sort((a,b)=>a.name.localeCompare(b.name)).map(st=>`<label class="studentpick"><input type="checkbox" name="editStudent" value="${st.id}" ${l.studentIds.includes(st.id)?'checked':''}><span>${esc(st.name)}${studentBillingType(st)==='monthly'?' · Mensile':''}${st.active===false?' · eliminato':''}</span></label>`).join('')}</div><div class="row"><div class="field"><label>Data</label><input class="input" id="editDate" type="date" value="${l.date}"></div><div class="field"><label>Ora</label><select class="input" id="editTime">${times.map(t=>`<option ${t===l.time?'selected':''}>${t}</option>`).join('')}</select></div></div><div class="row"><div class="field"><label>Durata</label><select class="input" id="editDuration">${[30,60,90,120,150,180].map(v=>`<option value="${v}" ${v===l.duration?'selected':''}>${durationLabel(v)}</option>`).join('')}</select></div><div class="field"><label>Modalità</label><select class="input" id="editMode"><option value="presence" ${l.mode==='presence'?'selected':''}>Presenza</option><option value="dad" ${l.mode==='dad'?'selected':''}>DAD</option></select></div></div><div class="field"><label>Tariffa per gli alunni non mensili</label><select class="input" id="editRate"><option value="" ${allMonthly?'selected':''}>${allMonthly?'Mensile · nessun costo a lezione':'— Seleziona tariffa —'}</option><option value="collective" ${l.rateType==='collective'?'selected':''}>Collettiva · €10 per alunno</option><option value="individual" ${l.rateType==='individual'?'selected':''}>Individuale · €20</option><option value="regular" ${l.rateType==='regular'?'selected':''}>Cliente abituale · €15</option></select></div><button class="cta" onclick="saveLessonEdit('${id}')">Salva modifiche</button>`);
 }
 function saveLessonEdit(id){
@@ -878,10 +879,10 @@ function exportMonthCSV(mk){
   const csv='\ufeff'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');downloadBlob(csv,`registro-lezioni-${mk}.csv`,'text/csv;charset=utf-8');toast('Registro mensile esportato');
 }
 function openSettings(){
-  const opts=makeTimes('08:00','22:00',30),hist=loadHistory(),lastBackup=data.meta?.lastBackupAt;
-  showModal(`<h2>Impostazioni</h2><p class="sub">Orari, link DAD e sicurezza dei dati.</p><div class="row"><div class="field"><label>Prima fascia</label><select class="input" id="setStart">${opts.map(t=>`<option ${t===data.settings.start?'selected':''}>${t}</option>`).join('')}</select></div><div class="field"><label>Ultima fascia</label><select class="input" id="setEnd">${opts.map(t=>`<option ${t===data.settings.end?'selected':''}>${t}</option>`).join('')}</select></div></div><div class="field"><label>Link fisso DAD</label><input class="input" id="setDad" value="${esc(data.settings.dadLink||'')}" placeholder="https://..."></div><button class="cta" onclick="saveSettings()">Salva impostazioni</button><div class="section-title"><h2>Sicurezza dati</h2></div><div class="note"><b>Ultimo backup esterno:</b> ${lastBackup?fmtDateTime(lastBackup):'mai'}.<br>I salvataggi automatici sul telefono aiutano contro errori, ma non proteggono da perdita/guasto del telefono.</div><div class="sendgrid"><button class="smallbtn" onclick="exportBackup()">⬇ Esporta backup</button><button class="smallbtn" onclick="shareBackup()">↗ Condividi backup</button></div><div class="sendgrid"><button class="smallbtn" onclick="document.getElementById('importFile').click()">⬆ Importa backup</button><button class="smallbtn" onclick="openSafetyHistory()">↶ Cronologia (${hist.length})</button></div>`);
+  const hist=loadHistory(),lastBackup=data.meta?.lastBackupAt;
+  showModal(`<h2>Impostazioni</h2><p class="sub">Link DAD e sicurezza dei dati.</p><div class="note"><b>🕘 Orari lezioni fissi</b><br>09:30–13:30 · 15:00–20:30<br><small>Gli altri orari sono stati rimossi dal gestionale.</small></div><div class="field"><label>Link fisso DAD</label><input class="input" id="setDad" value="${esc(data.settings.dadLink||'')}" placeholder="https://..."></div><button class="cta" onclick="saveSettings()">Salva impostazioni</button><div class="section-title"><h2>Sicurezza dati</h2></div><div class="note"><b>Ultimo backup esterno:</b> ${lastBackup?fmtDateTime(lastBackup):'mai'}.<br>I salvataggi automatici sul telefono aiutano contro errori, ma non proteggono da perdita/guasto del telefono.</div><div class="sendgrid"><button class="smallbtn" onclick="exportBackup()">⬇ Esporta backup</button><button class="smallbtn" onclick="shareBackup()">↗ Condividi backup</button></div><div class="sendgrid"><button class="smallbtn" onclick="document.getElementById('importFile').click()">⬆ Importa backup</button><button class="smallbtn" onclick="openSafetyHistory()">↶ Cronologia (${hist.length})</button></div>`);
 }
-function saveSettings(){const start=document.getElementById('setStart').value,end=document.getElementById('setEnd').value;if(start>end){toast('La prima fascia deve precedere l’ultima');return}data.settings.start=start;data.settings.end=end;data.settings.step=30;data.settings.dadLink=document.getElementById('setDad').value.trim();save('Impostazioni');closeModal();toast('Impostazioni salvate')}
+function saveSettings(){data.settings.start='09:30';data.settings.end='20:30';data.settings.step=30;data.settings.dadLink=document.getElementById('setDad').value.trim();save('Impostazioni');closeModal();toast('Impostazioni salvate')}
 function backupPayload(){return JSON.stringify(data,null,2)}
 function markBackupDone(){data.meta=data.meta||{};data.meta.lastBackupAt=new Date().toISOString();persistNow();renderHome()}
 function downloadBlob(content,name,type){const blob=content instanceof Blob?content:new Blob([content],{type}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
