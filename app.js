@@ -435,9 +435,9 @@ function openStudent(id){
   showModal(`<h2>${esc(st.name)}</h2><p class="sub">${esc(st.phone||'Telefono non inserito')}${st.parentPhone?` · Genitore ${esc(st.parentPhone)}`:''}</p><div class="note price-note"><b>Piano:</b> ${monthly?`Mensile · ${fmtEuro(monthlyAmountForStudent(st))}/mese · modalità e durata modificabili ogni volta · predefinita ${durationLabel(Number(st.monthlyDuration)||60)}`:`Pagamento a lezione${st.preferredRate?` · preferita ${PREFERRED_RATE_LABELS[st.preferredRate]}`:''}`}</div>${missing?`<div class="note warning-note"><b>${missing} lezioni senza tariffa:</b> apri le lezioni storiche e assegna il prezzo per completare la contabilità.</div>`:''}<div class="statrow"><div class="stat"><b>${lessonCount}</b><small>Lezioni svolte</small></div><div class="stat"><b>${fmtHours(dad+pr)}</b><small>Ore totali</small></div><div class="stat"><b>${monthly?'Mensile':fmtEuro(perLessonRevenue)}</b><small>${monthly?'Piano attivo':'Totale lezioni'}</small></div></div><div class="section-title"><h2>Storico contabile</h2><button class="textbtn" onclick="openStudentForm('${id}')">Modifica</button></div>${ls.length?ls.map(l=>`<div class="card lesson" onclick="openLesson('${l.id}')"><div class="timebox">${l.time}</div><div><h3>${fmtDate(l.date)}</h3><p>${lessonBlockLabel(l)} · ${lessonTypeLabel(l)}<br>${studentIsMonthlyInLesson(l,id)?'Mensile':hasValidPricing(l)?`${rateLabel(l.rateType)} · ${fmtEuro(lessonPriceForStudent(l,id))}${lessonUnitCount(l)>1?` × ${lessonUnitCount(l)} = ${fmtEuro(lessonChargeForStudent(l,id))}`:''}`:'⚠ Tariffa mancante'}</p></div><span class="pill ${l.mode==='dad'?'dad':'presence'}">${l.mode==='dad'?'DAD':'Presenza'}</span></div>`).join(''):`<div class="empty">Nessuna lezione svolta registrata.</div>`}`);
 }
 function startLessonWizard(){
-  wizard={step:0,studentIds:[],date:'',time:'',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null};
+  wizard={step:0,studentIds:[],date:'',time:'',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:'individual'};
   modalStack=[];
-  renderLessonTypeChooser();
+  renderWizard();
 }
 function lessonIsCollective(l){return l?.lessonType==='collective'||l?.rateType==='collective'||(l?.studentIds||[]).length>1}
 function lessonTypeLabel(l){return lessonIsCollective(l)?'Collettiva':'Individuale'}
@@ -448,18 +448,29 @@ function selectWizardLessonType(type){
   if(!['individual','collective'].includes(type))return;
   wizard.lessonType=type;wizard.studentIds=[];wizard.time='';wizard.mode=null;wizard.baseDuration=60;wizard.lessonUnits=1;wizard.duration=60;wizard.rateType=type==='collective'?'collective':null;wizard.repeatWeeks=1;wizard.step=0;renderWizard();
 }
+
+function setWizardLessonTypeSimple(type){
+  if(!['individual','collective'].includes(type) || wizard.lessonType===type)return;
+  wizard.lessonType=type;
+  if(type==='individual' && wizard.studentIds.length>1)wizard.studentIds=wizard.studentIds.slice(0,1);
+  if(type==='individual' && wizard.rateType==='collective')wizard.rateType=null;
+  if(type==='collective' && wizard.studentIds.length>1)wizard.rateType=wizardNonMonthlyIds().length?'collective':'monthly';
+  wizard.time='';
+  wizard.mode=null;
+  renderWizard();
+}
 function wizardMonthlyIds(){return wizard.studentIds.filter(id=>isMonthlyStudent(id))}
 function wizardNonMonthlyIds(){return wizard.studentIds.filter(id=>!isMonthlyStudent(id))}
 function isSingleMonthlyWizard(){return wizard.studentIds.length===1&&wizardMonthlyIds().length===1}
 function allWizardStudentsMonthly(){return wizard.studentIds.length>0&&wizardNonMonthlyIds().length===0}
 function wizardDots(){
-  const seq=isSingleMonthlyWizard()?[0,1,2,3,5]:(allWizardStudentsMonthly()||wizard.lessonType==='collective'?[0,1,2,3,5]:[0,1,2,3,4,5]);
+  const seq=(allWizardStudentsMonthly()||wizard.lessonType==='collective')?[0,1,2,3,5]:[0,1,2,3,4,5];
   const idx=Math.max(0,seq.indexOf(wizard.step));
   return `<div class="stepdots">${seq.map((_,i)=>`<span class="dot ${i<=idx?'on':''}"></span>`).join('')}</div>`;
 }
 function wizardBack(){
-  if(wizard.step===0){renderLessonTypeChooser();return}
-  if((isSingleMonthlyWizard()||allWizardStudentsMonthly()||wizard.lessonType==='collective')&&wizard.step===5){wizard.step=3;renderWizard();return}
+  if(wizard.step===0){modalBack();return}
+  if((allWizardStudentsMonthly()||wizard.lessonType==='collective')&&wizard.step===5){wizard.step=3;renderWizard();return}
   wizard.step--;renderWizard();
 }
 function timeFitsAvailability(t,duration){
@@ -478,7 +489,7 @@ function collectiveSlotInfo(t){
     const otherOverlaps=dayLessons.filter(l=>l.id!==target.id&&timeRangesOverlap(t,target.duration,l.time,l.duration));
     if(!otherOverlaps.length){
       if(target.studentIds.some(id=>wizard.studentIds.includes(id)))return {time:t,state:'blocked',target:null,label:'alunno già presente'};
-      return {time:t,state:'join',target,label:`${target.studentIds.length} ${target.studentIds.length===1?'alunno':'alunni'} già presenti · ${lessonUnitsLabel(target)} · ${target.mode==='dad'?'DAD':'Presenza'}`};
+      return {time:t,state:'join',target,label:`già aperta · ${target.studentIds.length} ${target.studentIds.length===1?'alunno':'alunni'} · ${lessonUnitsLabel(target)} · ${target.mode==='dad'?'DAD':'Presenza'}`};
     }
   }
   const overlaps=dayLessons.filter(l=>timeRangesOverlap(t,wizard.duration,l.time,l.duration));
@@ -505,8 +516,8 @@ function individualRateChoicesHtml(selected){
 }
 function renderWizard(){
   if(wizard.step===0){
-    const individual=wizard.lessonType==='individual';
-    replaceModal(`${wizardDots()}<h2>${individual?'Scegli l’alunno':'Scegli gli alunni'}</h2><p class="sub">${individual?'Per una lezione individuale puoi selezionare un solo alunno.':'Puoi iniziare anche con un solo alunno e aggiungerne altri in seguito nello stesso slot collettivo.'}</p>${activeStudents().sort((a,b)=>a.name.localeCompare(b.name)).map(st=>`<label class="studentpick"><input type="${individual?'radio':'checkbox'}" ${individual?'name="wizardStudent"':''} ${wizard.studentIds.includes(st.id)?'checked':''} onchange="toggleWizardStudent('${st.id}',this.checked)"><span>${esc(st.name)}${studentBillingType(st)==='monthly'?` · <b>Mensile ${fmtEuro(monthlyAmountForStudent(st))}</b>`:''}</span></label>`).join('')}<button class="cta secondary" onclick="openStudentFormFromWizard()">＋ Aggiungi alunno</button><div class="sticky-actions"><button class="cta" onclick="wizardNextStudents()">Continua</button></div>`);
+    const individual=wizard.lessonType!=='collective';
+    replaceModal(`${wizardDots()}<h2>Scegli alunno/i</h2><p class="sub">Versione semplificata: scegli il tipo e seleziona gli alunni.</p><div class="field"><label>Tipo lezione</label><div class="choices"><button class="choice ${individual?'selected':''}" onclick="setWizardLessonTypeSimple('individual')"><b>👤 Individuale</b><small>1 solo alunno · mostra solo gli slot liberi</small></button><button class="choice ${!individual?'selected':''}" onclick="setWizardLessonTypeSimple('collective')"><b>👥 Collettiva</b><small>1 o più alunni · puoi usare anche slot già collettivi</small></button></div></div>${activeStudents().sort((a,b)=>a.name.localeCompare(b.name)).map(st=>`<label class="studentpick"><input type="${individual?'radio':'checkbox'}" ${individual?'name="wizardStudent"':''} ${wizard.studentIds.includes(st.id)?'checked':''} onchange="toggleWizardStudent('${st.id}',this.checked)"><span>${esc(st.name)}${studentBillingType(st)==='monthly'?` · <b>Mensile ${fmtEuro(monthlyAmountForStudent(st))}</b>`:''}</span></label>`).join('')}<button class="cta secondary" onclick="openStudentFormFromWizard()">＋ Aggiungi alunno</button><div class="sticky-actions"><button class="cta" onclick="wizardNextStudents()">Continua</button></div>`);
   } else if(wizard.step===1){
     const opts=[],now=new Date();
     for(let i=0;i<7;i++){const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i),k=dateKey(d);opts.push(`<button class="choice daychoice ${wizard.date===k?'selected':''}" onclick="wizard.date='${k}';wizard.time='';wizard.mode=null;renderWizard()"><b>${i===0?'Oggi':days[d.getDay()]}</b><small>${d.getDate()} ${months[d.getMonth()].slice(0,3)}</small></button>`)}
@@ -515,12 +526,12 @@ function renderWizard(){
     const monthlySingle=isSingleMonthlyWizard(),st=monthlySingle?studentById(wizard.studentIds[0]):null;
     if(monthlySingle && ![60,90].includes(Number(wizard.baseDuration))){wizard.baseDuration=[60,90].includes(Number(st?.monthlyDuration))?Number(st.monthlyDuration):60;wizard.duration=lessonTotalMinutes(wizard.baseDuration,wizard.lessonUnits)}
     const options=wizardTimeOptions(),endPreview=wizard.time?endTimeFromStart(wizard.time,wizard.duration):null;
-    const helper=wizard.lessonType==='individual'?'Sono mostrati soltanto gli orari che possono contenere tutto il blocco e non si sovrappongono ad altre lezioni.':'Gli slot collettivi già aperti restano selezionabili: scegliendoli, durata e numero lezioni si allineano automaticamente.';
-    const durationHtml=`<div class="field"><label>Durata di UNA lezione</label><div class="choices"><button class="choice ${wizard.baseDuration===60?'selected':''}" onclick="setWizardBaseDuration(60)"><b>1 ora</b><small>lezione standard</small></button><button class="choice ${wizard.baseDuration===90?'selected':''}" onclick="setWizardBaseDuration(90)"><b>1h 30</b><small>lezione lunga</small></button></div></div><div class="field"><label>Quante lezioni consecutive?</label><div class="choices"><button class="choice ${wizard.lessonUnits===1?'selected':''}" onclick="setWizardUnits(1)"><b>+1</b><small>1 lezione · ${durationLabel(wizard.baseDuration)}</small></button><button class="choice ${wizard.lessonUnits===2?'selected':''}" onclick="setWizardUnits(2)"><b>+2</b><small>2 lezioni · ${durationLabel(wizard.duration)} totali</small></button></div></div><div class="note price-note"><b>Blocco selezionato:</b> ${wizard.lessonUnits} ${wizard.lessonUnits===1?'lezione':'lezioni'} × ${durationLabel(wizard.baseDuration)} = <b>${durationLabel(wizard.duration)}</b>${endPreview?` · ${wizard.time}–${endPreview}`:''}.<br><small>Con +2 la contabilità conterà due lezioni, senza dover inserire due volte lo stesso alunno.</small></div>`;
+    const helper=wizard.lessonType==='individual'?'Ti mostro solo gli orari liberi compatibili con tutta la durata scelta.':'Vedi gli orari liberi e anche gli slot collettivi già aperti: se ne scegli uno, il blocco si allinea automaticamente.';
+    const durationHtml=`<div class="field"><label>Durata di una lezione</label><div class="choices"><button class="choice ${wizard.baseDuration===60?'selected':''}" onclick="setWizardBaseDuration(60)"><b>1 ora</b><small>lezione standard</small></button><button class="choice ${wizard.baseDuration===90?'selected':''}" onclick="setWizardBaseDuration(90)"><b>1h 30m</b><small>lezione lunga</small></button></div></div><div class="field"><label>Quante lezioni consecutive?</label><div class="choices"><button class="choice ${wizard.lessonUnits===1?'selected':''}" onclick="setWizardUnits(1)"><b>+1</b><small>1 lezione · ${durationLabel(wizard.baseDuration)}</small></button><button class="choice ${wizard.lessonUnits===2?'selected':''}" onclick="setWizardUnits(2)"><b>+2</b><small>2 lezioni consecutive · ${durationLabel(wizard.duration)} totali</small></button></div></div><div class="note price-note"><b>Blocco selezionato:</b> ${wizard.lessonUnits} ${wizard.lessonUnits===1?'lezione':'lezioni'} × ${durationLabel(wizard.baseDuration)} = <b>${durationLabel(wizard.duration)}</b>${endPreview?` · ${wizard.time}–${endPreview}`:''}.<br><small>Con +2 la contabilità conterà due lezioni, senza dover inserire due volte lo stesso alunno.</small></div>`;
     replaceModal(`${wizardDots()}<h2>Durata e orario</h2><p class="sub">${helper}</p>${durationHtml}${options.length?`<div class="choices">${options.map(x=>`<button class="choice timechoice ${wizard.time===x.time?'selected':''} ${x.state==='join'?'busy-slot':''}" onclick="selectWizardTime('${x.time}')"><b>${x.time}</b><small>${x.state==='join'?'👥 '+x.label:x.label}</small></button>`).join('')}</div>`:`<div class="note warning-note"><b>Nessuno slot disponibile</b><br>Il blocco da ${durationLabel(wizard.duration)} non entra nelle fasce 09:30–13:30 o 15:00–20:30, oppure si sovrappone ad altre lezioni.</div>`}<button class="cta" onclick="wizardNextTime()" ${options.length?'':'disabled'}>Continua</button>`);
   } else if(wizard.step===3){
     const joinInfo=wizard.lessonType==='collective'&&wizard.time?collectiveSlotInfo(wizard.time):null;
-    replaceModal(`${wizardDots()}<h2>DAD o presenza?</h2><p class="sub">${joinInfo?.target?`Questo slot contiene già una lezione in <b>${joinInfo.target.mode==='dad'?'DAD':'presenza'}</b>: la stessa modalità è stata preselezionata per poter unire gli alunni.`:allWizardStudentsMonthly()?'Per gli alunni mensili la modalità va scelta a ogni lezione.':'La modalità verrà riportata nel registro e nei messaggi.'}</p><div class="choices"><button class="choice ${wizard.mode==='presence'?'selected':''}" onclick="wizard.mode='presence';renderWizard()">🏠<br>Presenza</button><button class="choice ${wizard.mode==='dad'?'selected':''}" onclick="wizard.mode='dad';renderWizard()">💻<br>DAD</button></div>${wizard.mode==='dad'?`<div class="field"><label>Link DAD</label><input class="input" value="${esc(data.settings.dadLink||'')}" oninput="data.settings.dadLink=this.value"></div>`:''}<button class="cta" onclick="wizardNextMode()">Continua</button>`);
+    replaceModal(`${wizardDots()}<h2>DAD o presenza?</h2><p class="sub">${joinInfo?.target?`Questo slot contiene già una lezione in <b>${joinInfo.target.mode==='dad'?'DAD':'presenza'}</b>: la stessa modalità è stata preselezionata per poter unire gli alunni.`:allWizardStudentsMonthly()?'Per gli alunni mensili la modalità va scelta a ogni lezione.':'La modalità verrà riportata nel registro e nei messaggi.'}</p><div class="choices"><button class="choice ${wizard.mode==='presence'?'selected':''}" onclick="wizard.mode='presence';renderWizard()"><b>🏠 Presenza</b></button><button class="choice ${wizard.mode==='dad'?'selected':''}" onclick="wizard.mode='dad';renderWizard()"><b>💻 DAD</b></button></div>${wizard.mode==='dad'?`<div class="field"><label>Link DAD</label><input class="input" value="${esc(data.settings.dadLink||'')}" oninput="data.settings.dadLink=this.value"></div>`:''}<button class="cta" onclick="wizardNextMode()">Continua</button>`);
   } else if(wizard.step===4){
     replaceModal(`${wizardDots()}<h2>Tariffa lezione individuale</h2><p class="sub">Il prezzo è per singola lezione: con +2 verrà conteggiato due volte automaticamente.</p><div class="price-grid">${individualRateChoicesHtml(wizard.rateType)}</div><button class="cta" onclick="wizardNextRate()">Continua</button>`);
   } else {

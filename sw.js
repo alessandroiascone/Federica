@@ -1,8 +1,7 @@
-const CACHE = 'lezioni-matematica-v7-4-duration-units';
+const CACHE = 'lezioni-matematica-v7-5-1-hotfix';
 const APP_SHELL = [
   './',
   './index.html',
-  './app.js?v=7.4',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -43,7 +42,7 @@ self.addEventListener('fetch', event => {
   }
 
   // Per app.js e manifest preferiamo la rete, così gli aggiornamenti arrivano subito.
-  if (url.pathname.endsWith('/app.js') || url.pathname.endsWith('/manifest.webmanifest')) {
+  if (url.pathname.endsWith('/manifest.webmanifest')) {
     event.respondWith(
       fetch(req).then(resp => {
         if (resp && resp.status === 200) {
