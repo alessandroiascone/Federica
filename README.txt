@@ -1,3 +1,13 @@
+LEZIONI MATEMATICA — V7.3
+
+NOVITÀ V7.3
+- Il flusso Nuova lezione parte da Individuale / Collettiva.
+- Individuale: mostra solo gli slot davvero liberi, considerando anche la durata e le sovrapposizioni.
+- Collettiva: mostra slot liberi + slot già aperti compatibili; un nuovo alunno può essere unito alla lezione esistente. Se entra in uno slot già aperto, durata e modalità si allineano automaticamente.
+- Una collettiva può partire con 1 alunno a €10 e accogliere altri alunni in seguito.
+- Se una lezione esistente viene trasformata in collettiva, gli alunni non mensili dello slot passano a €10 ciascuno.
+- DAD/Presenza resta obbligatorio e, quando si entra in una collettiva già aperta, viene proposta la modalità esistente.
+
 LEZIONI MATEMATICA — PWA GITHUB PAGES
 Versione V7.1 — gestione completa, contabilità e prossimi 30 giorni
 
@@ -50,3 +60,6 @@ V7.2 — ORARI FISSI
 - Orari selezionabili: 09:30–13:30 e 15:00–20:30, a step di 30 minuti.
 - Rimossi tutti gli altri orari dalla creazione e modifica delle lezioni.
 - Rimossa la modifica degli orari dalle Impostazioni.
+
+
+V7.4: durate disponibili 1h / 1h30 con +1 o +2 lezioni consecutive. Il blocco orario occupa la durata totale, mentre contabilità e riepiloghi conteggiano correttamente il numero di lezioni.

@@ -1,8 +1,8 @@
-const CACHE = 'lezioni-matematica-v7-2-fixed-hours';
+const CACHE = 'lezioni-matematica-v7-4-duration-units';
 const APP_SHELL = [
   './',
   './index.html',
-  './app.js?v=7.2',
+  './app.js?v=7.4',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
