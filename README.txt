@@ -12,3 +12,8 @@ Flusso Nuova lezione:
 7. Conferma
 
 Mantiene la logica slot: Individuale = solo orari liberi; Collettiva = anche slot collettivi già aperti.
+
+
+SET ICONE INTEGRATO
+- Icona PWA principale: icons/icon-192.png, icons/icon-512.png, icons/maskable-512.png
+- Set extra: icons/pi-app-512.png, icons/agenda-512.png, icons/students-512.png, icons/reports-512.png, icons/payments-512.png

@@ -1,4 +1,4 @@
-const CACHE = 'lezioni-matematica-v7-5-1-hotfix';
+const CACHE = 'lezioni-matematica-v7-6-multi-ricorrente-duplica';
 const APP_SHELL = [
   './',
   './index.html',
