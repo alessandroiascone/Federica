@@ -21,3 +21,5 @@ Novità V7.6.2:
 V7.6.3 ICONE VISIBILI
 Le icone 3D ora sono collegate alla UI e l’icona PWA principale usa file versionati per evitare cache vecchie.
 Dopo il deploy: aggiorna la pagina. Per forzare l’icona sul launcher Honor, disinstalla la vecchia PWA e reinstallala dal link GitHub Pages.
+
+V7.6.4: Modifica lezione completa. È possibile cambiare Individuale/Collettiva, aggiungere o rimuovere alunni e la tariffa si ricalcola automaticamente.

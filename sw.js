@@ -1,4 +1,4 @@
-const CACHE = 'lezioni-matematica-v7-6-3-icone-visibili';
+const CACHE = 'lezioni-matematica-v7-6-4-modifica-completa';
 const APP_SHELL = [
   './',
   './index.html',
