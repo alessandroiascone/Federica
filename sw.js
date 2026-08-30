@@ -1,11 +1,16 @@
-const CACHE = 'lezioni-matematica-v7-6-2-tariffa-automatica';
+const CACHE = 'lezioni-matematica-v7-6-3-icone-visibili';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/maskable-512.png'
+  './icons/app-pi-v2-192.png',
+  './icons/app-pi-v2-512.png',
+  './icons/app-pi-v2-maskable-512.png',
+  './icons/pi-app-192.png',
+  './icons/agenda-192.png',
+  './icons/students-192.png',
+  './icons/reports-192.png',
+  './icons/payments-192.png'
 ];
 
 self.addEventListener('install', event => {

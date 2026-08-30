@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#111827">
 <meta name="description" content="Agenda mobile per lezioni private di matematica: alunni, DAD/presenza, riepiloghi e pagamenti.">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
-<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/app-pi-v2-192.png">
+<link rel="apple-touch-icon" href="./icons/app-pi-v2-192.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -78,6 +78,8 @@ button.mini-stat:active{transform:scale(.98)}
 .navfab{border:0;background:transparent;padding:0;display:grid;place-items:center;color:#fff;min-height:54px}
 .navfab span{width:58px;height:58px;margin-top:-22px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),var(--primary2));box-shadow:0 12px 26px rgba(91,92,240,.35);font-size:31px;font-weight:300}
 .navbtn .nicon{display:block;font-size:20px;margin-bottom:3px}.navbtn.active{color:var(--primary);background:#ececff}
+.nicon-img{display:block;width:27px;height:27px;object-fit:contain;margin:0 auto 3px;border-radius:8px;filter:drop-shadow(0 2px 5px rgba(64,67,200,.18))}
+.mini-icon-img{width:30px;height:30px;object-fit:contain;display:block;margin:0 auto 5px;border-radius:9px}
 
 .page{display:none}.page.active{display:block}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin:14px 2px 13px}
@@ -210,7 +212,7 @@ button.mini-stat:active{transform:scale(.98)}
     <div class="home-stats">
       <div class="mini-stat"><b id="statToday">0</b><span>LEZIONI OGGI</span></div>
       <div class="mini-stat"><b id="statWeek">0</b><span>PROSSIMI 7 GG</span></div>
-      <button class="mini-stat" onclick="go('students')"><b id="statStudents">0</b><span>ALUNNI</span></button>
+      <button class="mini-stat" onclick="go('students')"><img class="mini-icon-img" src="./icons/students-192.png" alt=""><b id="statStudents">0</b><span>ALUNNI</span></button>
     </div>
     <div id="accountingAlert"></div>
 
@@ -243,11 +245,11 @@ button.mini-stat:active{transform:scale(.98)}
 </div>
 
 <nav class="bottom">
-  <button class="navbtn active" data-page="home" onclick="go('home')"><span class="nicon">⌂</span>Home</button>
-  <button class="navbtn" data-page="agenda" onclick="go('agenda')"><span class="nicon">📅</span>Lezioni</button>
+  <button class="navbtn active" data-page="home" onclick="go('home')"><img class="nicon-img" src="./icons/pi-app-192.png" alt="">Home</button>
+  <button class="navbtn" data-page="agenda" onclick="go('agenda')"><img class="nicon-img" src="./icons/agenda-192.png" alt="">Lezioni</button>
   <button class="navfab" onclick="startLessonWizard()" aria-label="Nuova lezione"><span>＋</span></button>
-  <button class="navbtn" onclick="openSummary()"><span class="nicon">🧾</span>Riepilogo</button>
-  <button class="navbtn" data-page="payments" onclick="go('payments')"><span class="nicon">€</span>Pagamenti</button>
+  <button class="navbtn" onclick="openSummary()"><img class="nicon-img" src="./icons/reports-192.png" alt="">Riepilogo</button>
+  <button class="navbtn" data-page="payments" onclick="go('payments')"><img class="nicon-img" src="./icons/payments-192.png" alt="">Pagamenti</button>
 </nav>
 <input type="file" id="importFile" accept="application/json,.json" hidden onchange="importBackup(this)">
 
