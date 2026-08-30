@@ -1,4 +1,4 @@
-const CACHE = 'lezioni-matematica-v7-6-1-orari-pillole';
+const CACHE = 'lezioni-matematica-v7-6-2-tariffa-automatica';
 const APP_SHELL = [
   './',
   './index.html',
