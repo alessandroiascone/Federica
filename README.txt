@@ -1,9 +1,14 @@
-LEZIONI MATEMATICA — V7.5.1 HOTFIX
+VERSIONE V7.6 - PROGRAMMAZIONE MULTIPLA, RICORRENZE E DUPLICAZIONE
 
-Pacchetto GitHub Pages.
-La logica dell'app è inclusa direttamente in index.html per evitare schermate visibili ma pulsanti inattivi in caso di upload/cache incoerente di app.js.
+LEZIONI MATEMATICA – V7.5.2
 
-Carica/sostituisci TUTTI i file nella root della repo e la cartella icons.
-Dopo il deploy, sull'app installata apri una volta online e aggiorna.
+Flusso Nuova lezione:
+1. Seleziona o aggiungi alunno/i
+2. Tipo di lezione: Individuale o Collettiva
+3. Giorno
+4. Durata (+1/+2) e slot orario
+5. DAD o Presenza
+6. Tariffa quando necessaria
+7. Conferma
 
-Versione: 7.5.1
+Mantiene la logica slot: Individuale = solo orari liberi; Collettiva = anche slot collettivi già aperti.
