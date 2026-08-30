@@ -61,7 +61,7 @@ function loadDataSafely(){
 let data=loadDataSafely();
 let agendaMode='today';
 let selectedPayMonth=monthKey(new Date());
-let wizard={step:0,studentIds:[],date:'',time:'',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null};
+let wizard={step:0,studentIds:[],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},plannerStage:'day',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null,quickDuplicate:false,duplicateSourceId:null};
 let currentPage='home';
 let pageStack=[];
 let modalStack=[];
@@ -435,7 +435,7 @@ function openStudent(id){
   showModal(`<h2>${esc(st.name)}</h2><p class="sub">${esc(st.phone||'Telefono non inserito')}${st.parentPhone?` · Genitore ${esc(st.parentPhone)}`:''}</p><div class="note price-note"><b>Piano:</b> ${monthly?`Mensile · ${fmtEuro(monthlyAmountForStudent(st))}/mese · modalità e durata modificabili ogni volta · predefinita ${durationLabel(Number(st.monthlyDuration)||60)}`:`Pagamento a lezione${st.preferredRate?` · preferita ${PREFERRED_RATE_LABELS[st.preferredRate]}`:''}`}</div>${missing?`<div class="note warning-note"><b>${missing} lezioni senza tariffa:</b> apri le lezioni storiche e assegna il prezzo per completare la contabilità.</div>`:''}<div class="statrow"><div class="stat"><b>${lessonCount}</b><small>Lezioni svolte</small></div><div class="stat"><b>${fmtHours(dad+pr)}</b><small>Ore totali</small></div><div class="stat"><b>${monthly?'Mensile':fmtEuro(perLessonRevenue)}</b><small>${monthly?'Piano attivo':'Totale lezioni'}</small></div></div><div class="section-title"><h2>Storico contabile</h2><button class="textbtn" onclick="openStudentForm('${id}')">Modifica</button></div>${ls.length?ls.map(l=>`<div class="card lesson" onclick="openLesson('${l.id}')"><div class="timebox">${l.time}</div><div><h3>${fmtDate(l.date)}</h3><p>${lessonBlockLabel(l)} · ${lessonTypeLabel(l)}<br>${studentIsMonthlyInLesson(l,id)?'Mensile':hasValidPricing(l)?`${rateLabel(l.rateType)} · ${fmtEuro(lessonPriceForStudent(l,id))}${lessonUnitCount(l)>1?` × ${lessonUnitCount(l)} = ${fmtEuro(lessonChargeForStudent(l,id))}`:''}`:'⚠ Tariffa mancante'}</p></div><span class="pill ${l.mode==='dad'?'dad':'presence'}">${l.mode==='dad'?'DAD':'Presenza'}</span></div>`).join(''):`<div class="empty">Nessuna lezione svolta registrata.</div>`}`);
 }
 function startLessonWizard(){
-  wizard={step:0,introStep:'students',studentIds:[],appointments:[],date:'',time:'',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null,quickDuplicate:false,duplicateSourceId:null};
+  wizard={step:0,introStep:'students',studentIds:[],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},plannerStage:'day',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null,quickDuplicate:false,duplicateSourceId:null};
   modalStack=[];
   renderWizard();
 }
@@ -459,12 +459,18 @@ function wizardDots(){
   return `<div class="stepdots">${Array.from({length:total},(_,i)=>`<span class="dot ${i<=current?'on':''}"></span>`).join('')}</div>`;
 }
 function wizardBack(){
-  if(wizard.quickDuplicate){if(wizard.step===5){wizard.step=1;renderWizard();return}modalBack();return}
+  if(wizard.step===1){
+    wizard.plannerStage=wizard.plannerStage||'day';
+    if(wizard.plannerStage==='modes'){wizard.plannerStage='times';renderWizard();return}
+    if(wizard.plannerStage==='times'){wizard.plannerStage='day';renderWizard();return}
+    if(wizard.quickDuplicate){modalBack();return}
+    wizard.step=0;wizard.introStep='type';renderWizard();return;
+  }
+  if(wizard.quickDuplicate){if(wizard.step===5){wizard.step=1;wizard.plannerStage='day';renderWizard();return}modalBack();return}
   if(wizard.step===0){if(wizard.introStep==='type'){wizard.introStep='students';renderWizard();return}modalBack();return}
-  if(wizard.step===1){wizard.step=0;wizard.introStep='type';renderWizard();return}
-  if(wizard.step===4){wizard.step=1;renderWizard();return}
-  if(wizard.step===5){wizard.step=(allWizardStudentsMonthly()||wizard.lessonType==='collective')?1:4;renderWizard();return}
-  wizard.step=1;renderWizard();
+  if(wizard.step===4){wizard.step=1;wizard.plannerStage='day';renderWizard();return}
+  if(wizard.step===5){wizard.step=(allWizardStudentsMonthly()||wizard.lessonType==='collective')?1:4;wizard.plannerStage='day';renderWizard();return}
+  wizard.step=1;wizard.plannerStage='day';renderWizard();
 }
 function timeFitsAvailability(t,duration){
   const start=timeToMinutes(t),end=start+(Number(duration)||60);
@@ -503,15 +509,39 @@ function wizardTimeOptions(){
   if(wizard.lessonType==='individual')return allowedStartTimesForDuration(wizard.duration).filter(t=>wizardOverlapsAt(t).length===0).map(t=>({time:t,state:'free',label:`libero · fino alle ${endTimeFromStart(t,wizard.duration)}`}));
   return allowedLessonTimes().map(t=>{const info=collectiveSlotInfo(t);if(info.state==='join')return timeFitsAvailability(t,info.target?.duration||wizard.duration)?info:{...info,state:'blocked'};if(info.state==='free'&&!timeFitsAvailability(t,wizard.duration))return {...info,state:'blocked'};if(info.state==='free')info.label=`libero · fino alle ${endTimeFromStart(t,wizard.duration)}`;return info}).filter(x=>x.state!=='blocked');
 }
-function setWizardDate(k){wizard.date=k;wizard.time='';if(!wizard.quickDuplicate)wizard.mode=null;renderWizard()}
-function selectWizardTime(t){
-  wizard.time=t;
+function setWizardDate(k){
+  wizard.date=k;wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};if(!wizard.quickDuplicate)wizard.mode=null;wizard.plannerStage='times';renderWizard();
+}
+function selectedTimeDuration(t){
   if(wizard.lessonType==='collective'){
-    const info=collectiveSlotInfo(t);
-    if(info.target&&!wizard.quickDuplicate){wizard.baseDuration=lessonBaseMinutes(info.target);wizard.lessonUnits=lessonUnitCount(info.target);wizard.duration=Number(info.target.duration)||wizard.duration;wizard.mode=info.target.mode}
+    const info=collectiveSlotInfo(t);if(info?.target)return Number(info.target.duration)||wizard.duration;
   }
+  return wizard.duration;
+}
+function toggleWizardTimePill(t){
+  wizard.selectedTimes=Array.isArray(wizard.selectedTimes)?wizard.selectedTimes:[];wizard.timeModes=wizard.timeModes||{};
+  const i=wizard.selectedTimes.indexOf(t);
+  if(i>=0){wizard.selectedTimes.splice(i,1);delete wizard.timeModes[t];renderWizard();return}
+  const option=wizardTimeOptions().find(x=>x.time===t);if(!option){toast('Questo orario non è disponibile');return}
+  const dur=selectedTimeDuration(t);
+  for(const other of wizard.selectedTimes){if(timeRangesOverlap(t,dur,other,selectedTimeDuration(other))){toast('Gli orari scelti si sovrappongono');return}}
+  wizard.selectedTimes.push(t);
+  if(wizard.quickDuplicate)wizard.timeModes[t]=wizard.mode;
+  else if(wizard.lessonType==='collective'){const info=collectiveSlotInfo(t);if(info?.target)wizard.timeModes[t]=info.target.mode}
   renderWizard();
 }
+function wizardTimesNext(){
+  if(!(wizard.selectedTimes||[]).length){toast('Seleziona almeno un orario');return}
+  wizard.plannerStage='modes';renderWizard();
+}
+function setWizardTimeMode(t,mode){
+  if(!['presence','dad'].includes(mode))return;wizard.timeModes=wizard.timeModes||{};
+  if(wizard.lessonType==='collective'){
+    const info=collectiveSlotInfo(t);if(info?.target&&info.target.mode!==mode){toast(`Questo slot è già ${info.target.mode==='dad'?'DAD':'in presenza'}`);return}
+  }
+  wizard.timeModes[t]=mode;renderWizard();
+}
+function selectWizardTime(t){wizard.time=t;toggleWizardTimePill(t)}
 function setWizardBaseDuration(v){if(wizard.quickDuplicate)return;wizard.baseDuration=[60,90].includes(Number(v))?Number(v):60;wizard.duration=lessonTotalMinutes(wizard.baseDuration,wizard.lessonUnits);wizard.time='';wizard.mode=null;renderWizard()}
 function setWizardUnits(v){if(wizard.quickDuplicate)return;wizard.lessonUnits=[1,2].includes(Number(v))?Number(v):1;wizard.duration=lessonTotalMinutes(wizard.baseDuration,wizard.lessonUnits);wizard.time='';wizard.mode=null;renderWizard()}
 function individualRateChoicesHtml(selected){
@@ -528,12 +558,31 @@ function plannerQuickDaysHtml(){
   for(let i=0;i<7;i++){const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i),k=dateKey(d);opts.push(`<button class="choice daychoice ${wizard.date===k?'selected':''}" onclick="setWizardDate('${k}')"><b>${i===0?'Oggi':days[d.getDay()]}</b><small>${d.getDate()} ${months[d.getMonth()].slice(0,3)}</small></button>`)}
   return opts.join('');
 }
+function plannerTimePillsHtml(){
+  const options=wizardTimeOptions(),selected=wizard.selectedTimes||[];
+  if(!options.length)return `<div class="note warning-note"><b>Nessuno slot disponibile</b><br>Cambia giorno o durata.</div>`;
+  return `<div class="time-pills">${options.map(x=>`<button class="time-pill ${selected.includes(x.time)?'selected':''} ${x.state==='join'?'join':''}" onclick="toggleWizardTimePill('${x.time}')"><b>${x.time}</b>${x.state==='join'?'<span>👥</span>':''}</button>`).join('')}</div><div class="time-legend"><span>✓ puoi selezionare uno o più orari</span>${wizard.lessonType==='collective'?'<span>👥 slot collettivo già aperto</span>':''}</div>`;
+}
+function plannerModesHtml(){
+  const selected=[...(wizard.selectedTimes||[])].sort(),rows=selected.map(t=>{
+    const info=wizard.lessonType==='collective'?collectiveSlotInfo(t):null,locked=wizard.quickDuplicate||!!info?.target,mode=wizard.quickDuplicate?wizard.mode:(wizard.timeModes?.[t]||info?.target?.mode||null),dur=info?.target?Number(info.target.duration)||wizard.duration:wizard.duration;
+    return `<div class="mode-time-row"><div class="mode-time-head"><b>${t}–${endTimeFromStart(t,dur)}</b>${info?.target?'<small>👥 collettiva già aperta</small>':''}</div><div class="mode-pills"><button class="mode-pill ${mode==='presence'?'selected':''} ${locked&&mode!=='presence'?'disabled':''}" ${locked&&mode!=='presence'?'disabled':''} onclick="setWizardTimeMode('${t}','presence')">🏠 Presenza</button><button class="mode-pill ${mode==='dad'?'selected':''} ${locked&&mode!=='dad'?'disabled':''}" ${locked&&mode!=='dad'?'disabled':''} onclick="setWizardTimeMode('${t}','dad')">💻 DAD</button></div></div>`;
+  }).join('');
+  const anyDad=selected.some(t=>(wizard.quickDuplicate?wizard.mode:wizard.timeModes?.[t])==='dad'||(wizard.lessonType==='collective'&&collectiveSlotInfo(t)?.target?.mode==='dad'));
+  return `${rows}${anyDad?`<div class="field"><label>Link DAD</label><input class="input" value="${esc(data.settings.dadLink||'')}" oninput="data.settings.dadLink=this.value"></div>`:''}`;
+}
 function renderWizardPlanner(){
-  const options=wizardTimeOptions();
-  const duplicateNote=wizard.quickDuplicate?`<div class="note price-note"><b>Duplicazione rapida:</b> alunni, ${wizard.lessonType==='collective'?'collettiva':'individuale'}, ${durationLabel(wizard.duration)}, ${wizard.mode==='dad'?'DAD':'presenza'} e tariffa sono già preimpostati. Devi scegliere solo giorno e ora.</div>`:'';
+  wizard.plannerStage=wizard.plannerStage||'day';
+  const duplicateNote=wizard.quickDuplicate?`<div class="note price-note"><b>Duplicazione rapida:</b> alunni, ${wizard.lessonType==='collective'?'collettiva':'individuale'}, ${durationLabel(wizard.duration)}, ${wizard.mode==='dad'?'DAD':'presenza'} e tariffa sono già preimpostati.</div>`:'';
   const durationHtml=wizard.quickDuplicate?'':`<div class="field"><label>Durata</label><div class="choices"><button class="choice ${wizard.baseDuration===60?'selected':''}" onclick="setWizardBaseDuration(60)"><b>1 ora</b><small>lezione standard</small></button><button class="choice ${wizard.baseDuration===90?'selected':''}" onclick="setWizardBaseDuration(90)"><b>1h 30m</b><small>lezione lunga</small></button></div></div><div class="field"><label>Lezioni consecutive</label><div class="choices"><button class="choice ${wizard.lessonUnits===1?'selected':''}" onclick="setWizardUnits(1)"><b>+1</b><small>1 lezione · ${durationLabel(wizard.baseDuration)}</small></button><button class="choice ${wizard.lessonUnits===2?'selected':''}" onclick="setWizardUnits(2)"><b>+2</b><small>2 lezioni · ${durationLabel(wizard.duration)} totali</small></button></div></div>`;
-  const modeHtml=wizard.quickDuplicate?'':`<div class="field"><label>Modalità di questo appuntamento</label><div class="choices"><button class="choice ${wizard.mode==='presence'?'selected':''}" onclick="wizard.mode='presence';renderWizard()"><b>🏠 Presenza</b></button><button class="choice ${wizard.mode==='dad'?'selected':''}" onclick="wizard.mode='dad';renderWizard()"><b>💻 DAD</b></button></div></div>${wizard.mode==='dad'?`<div class="field"><label>Link DAD</label><input class="input" value="${esc(data.settings.dadLink||'')}" oninput="data.settings.dadLink=this.value"></div>`:''}`;
-  return `${wizardDots()}<h2>${wizard.quickDuplicate?'Duplica lezione':'Programma le lezioni'}</h2><p class="sub">${wizard.quickDuplicate?'Tutto è già pronto: scegli una nuova data e un nuovo orario.':'Puoi aggiungere più giorni e orari nello stesso flusso, anche con modalità diverse.'}</p>${duplicateNote}${durationHtml}<div class="field"><label>Giorno</label><div class="choices">${plannerQuickDaysHtml()}</div></div><div class="field"><label>Altra data</label><input class="input" type="date" value="${wizard.date}" onchange="setWizardDate(this.value)"></div>${wizard.date?`<div class="field"><label>Orario</label>${options.length?`<div class="choices">${options.map(x=>`<button class="choice timechoice ${wizard.time===x.time?'selected':''} ${x.state==='join'?'busy-slot':''}" onclick="selectWizardTime('${x.time}')"><b>${x.time}</b><small>${x.state==='join'?'👥 '+x.label:x.label}</small></button>`).join('')}</div>`:`<div class="note warning-note"><b>Nessuno slot disponibile</b><br>Cambia giorno o durata.</div>`}</div>`:`<div class="note">Seleziona un giorno per vedere gli orari disponibili.</div>`}${modeHtml}<div class="field"><label>Ricorrenza di questo appuntamento</label><select class="input" onchange="wizard.repeatWeeks=Number(this.value);renderWizard()"><option value="1" ${wizard.repeatWeeks===1?'selected':''}>Solo questa data</option><option value="4" ${wizard.repeatWeeks===4?'selected':''}>Ogni settimana · 4 appuntamenti</option><option value="8" ${wizard.repeatWeeks===8?'selected':''}>Ogni settimana · 8 appuntamenti</option><option value="12" ${wizard.repeatWeeks===12?'selected':''}>Ogni settimana · 12 appuntamenti</option></select></div><button class="cta secondary" onclick="addWizardAppointment()">＋ Aggiungi appuntamento</button>${appointmentListHtml()}<button class="cta" onclick="finishWizardPlanning()" ${(wizard.appointments||[]).length?'':'disabled'}>Continua con ${(wizard.appointments||[]).length} ${(wizard.appointments||[]).length===1?'appuntamento':'appuntamenti'}</button>`;
+  if(wizard.plannerStage==='times'){
+    return `${wizardDots()}<h2>Scegli orario/i</h2><p class="sub"><b>${fmtDate(wizard.date)}</b> · tocca una o più pillole. Gli orari incompatibili non vengono mostrati.</p>${plannerTimePillsHtml()}<button class="cta" onclick="wizardTimesNext()">Continua con ${(wizard.selectedTimes||[]).length} ${(wizard.selectedTimes||[]).length===1?'orario':'orari'}</button>`;
+  }
+  if(wizard.plannerStage==='modes'){
+    const selected=wizard.selectedTimes||[],modesOk=wizard.quickDuplicate||selected.every(t=>!!wizard.timeModes?.[t]||(wizard.lessonType==='collective'&&!!collectiveSlotInfo(t)?.target));
+    return `${wizardDots()}<h2>DAD o presenza</h2><p class="sub">Imposta la modalità per ogni orario scelto. Puoi mescolare DAD e presenza nello stesso giorno.</p>${plannerModesHtml()}<div class="field"><label>Ricorrenza</label><div class="recurrence-pills"><button class="rec-pill ${wizard.repeatWeeks===1?'selected':''}" onclick="wizard.repeatWeeks=1;renderWizard()">Una volta</button><button class="rec-pill ${wizard.repeatWeeks===4?'selected':''}" onclick="wizard.repeatWeeks=4;renderWizard()">×4 settimane</button><button class="rec-pill ${wizard.repeatWeeks===8?'selected':''}" onclick="wizard.repeatWeeks=8;renderWizard()">×8 settimane</button><button class="rec-pill ${wizard.repeatWeeks===12?'selected':''}" onclick="wizard.repeatWeeks=12;renderWizard()">×12 settimane</button></div></div><button class="cta secondary" onclick="addWizardAppointmentsBatch()" ${modesOk?'':'disabled'}>＋ Aggiungi ${selected.length} ${selected.length===1?'appuntamento':'appuntamenti'}</button>`;
+  }
+  return `${wizardDots()}<h2>${wizard.quickDuplicate?'Duplica lezione':'Programma le lezioni'}</h2><p class="sub">${wizard.quickDuplicate?'Scegli il giorno: subito dopo vedrai gli orari in pillole.':'Scegli un giorno alla volta. Dopo il tap potrai selezionare uno o più orari con le pillole.'}</p>${duplicateNote}${durationHtml}<div class="field"><label>Giorno</label><div class="choices">${plannerQuickDaysHtml()}</div></div><div class="field"><label>Altra data</label><input class="input" type="date" value="${wizard.date}" onchange="setWizardDate(this.value)"></div>${appointmentListHtml()}<button class="cta" onclick="finishWizardPlanning()" ${(wizard.appointments||[]).length?'':'disabled'}>Continua con ${(wizard.appointments||[]).length} ${(wizard.appointments||[]).length===1?'appuntamento':'appuntamenti'}</button>`;
 }
 function renderWizard(){
   if(wizard.step===0){
@@ -551,14 +600,14 @@ function renderWizard(){
     const occ=wizardOccurrences(),monthlyIds=wizardMonthlyIds(),nonMonthlyIds=wizardNonMonthlyIds(),price=nonMonthlyIds.length?rateAmount(wizard.rateType):0,totalUnits=occ.reduce((a,o)=>a+(Number(o.lessonUnits)||1),0),lessonTotal=price*nonMonthlyIds.length*totalUnits,collective=wizard.lessonType==='collective';
     const names=wizard.studentIds.map(id=>studentById(id)?.name).filter(Boolean).join(', '),monthlyDetails=monthlyIds.map(id=>{const st=studentById(id);return `${st?.name||'Alunno'}: mensile ${fmtEuro(monthlyAmountForStudent(st))}/mese`}).join('<br>');
     const plan=(wizard.appointments||[]).slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(ap=>`<div class="card" style="padding:12px"><b>${fmtDate(ap.date)} · ${ap.time}–${endTimeFromStart(ap.time,ap.duration)}</b><p style="margin:5px 0 0;color:var(--muted);font-size:12px">${ap.mode==='dad'?'💻 DAD':'🏠 Presenza'} · ${ap.lessonUnits} ${ap.lessonUnits===1?'lezione':'lezioni'} × ${durationLabel(ap.baseDuration)}${ap.repeatWeeks>1?` · ↻ ${ap.repeatWeeks} settimane`:''}</p></div>`).join('');
-    replaceModal(`${wizardDots()}<h2>Conferma programmazione</h2><p class="sub">${wizard.quickDuplicate?'Lezione duplicata: controlla soltanto la nuova programmazione.':`Stai registrando ${occ.length} ${occ.length===1?'appuntamento':'appuntamenti'} in un’unica operazione.`}</p><div class="note price-note"><b>${esc(names)}</b><br>${collective?'👥 Collettiva':'👤 Individuale'} · ${totalUnits} ${totalUnits===1?'lezione':'lezioni'} contabili${nonMonthlyIds.length?` · Totale automatico ${fmtEuro(lessonTotal)}`:' · Piano mensile'}${monthlyDetails?`<br>${monthlyDetails}`:''}</div>${plan}<button class="cta" onclick="confirmWizard()">✓ Conferma tutto</button><button class="cta secondary" onclick="wizard.step=1;renderWizard()">Modifica appuntamenti</button>`);
+    replaceModal(`${wizardDots()}<h2>Conferma programmazione</h2><p class="sub">${wizard.quickDuplicate?'Lezione duplicata: controlla soltanto la nuova programmazione.':`Stai registrando ${occ.length} ${occ.length===1?'appuntamento':'appuntamenti'} in un’unica operazione.`}</p><div class="note price-note"><b>${esc(names)}</b><br>${collective?'👥 Collettiva':'👤 Individuale'} · ${totalUnits} ${totalUnits===1?'lezione':'lezioni'} contabili${nonMonthlyIds.length?` · Totale automatico ${fmtEuro(lessonTotal)}`:' · Piano mensile'}${monthlyDetails?`<br>${monthlyDetails}`:''}</div>${plan}<button class="cta" onclick="confirmWizard()">✓ Conferma tutto</button><button class="cta secondary" onclick="wizard.step=1;wizard.plannerStage='day';renderWizard()">Modifica appuntamenti</button>`);
   }
   const back=document.querySelector('#sheet .sheet-back');if(back)back.setAttribute('onclick','wizardBack()');
 }
 function chooseWizardLessonType(type){
   if(!['individual','collective'].includes(type))return;
   if(type==='individual'&&wizard.studentIds.length!==1){toast('Per Individuale seleziona un solo alunno');return}
-  wizard.lessonType=type;wizard.time='';wizard.mode=null;wizard.appointments=[];
+  wizard.lessonType=type;wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.plannerStage='day';wizard.mode=null;wizard.appointments=[];
   if(type==='collective')wizard.rateType=wizardNonMonthlyIds().length?'collective':'monthly';
   else if(wizard.studentIds.length===1&&!isMonthlyStudent(wizard.studentIds[0])){const st=studentById(wizard.studentIds[0]);wizard.rateType=st?.preferredRate||null}else wizard.rateType='monthly';
   wizard.step=1;renderWizard();
@@ -574,7 +623,25 @@ function saveStudentFromWizard(){
   const st=Object.assign({id:uid(),name,phone:document.getElementById('wfPhone').value.trim(),parentPhone:document.getElementById('wfParent').value.trim(),active:true},billing);
   data.students.push(st);if(!wizard.studentIds.includes(st.id))wizard.studentIds.push(st.id);if(st.billingType==='monthly'&&wizard.studentIds.length===1){wizard.mode=null;wizard.baseDuration=[60,90].includes(Number(st.monthlyDuration))?Number(st.monthlyDuration):60;wizard.lessonUnits=1;wizard.duration=wizard.baseDuration;wizard.rateType='monthly'}save('Nuovo alunno durante lezione');if(modalStack.length)modalStack.pop();renderWizard();
 }
-function wizardNextStudents(){if(!wizard.studentIds.length){toast('Seleziona almeno un alunno');return}wizard.lessonType=null;wizard.time='';wizard.mode=null;wizard.rateType=null;wizard.appointments=[];wizard.introStep='type';wizard.step=0;renderWizard()}
+function wizardNextStudents(){if(!wizard.studentIds.length){toast('Seleziona almeno un alunno');return}wizard.lessonType=null;wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.plannerStage='day';wizard.mode=null;wizard.rateType=null;wizard.appointments=[];wizard.introStep='type';wizard.step=0;renderWizard()}
+function addWizardAppointmentsBatch(){
+  const selected=[...(wizard.selectedTimes||[])].sort();if(!wizard.date){toast('Scegli il giorno');return}if(!selected.length){toast('Seleziona almeno un orario');return}
+  if(!ensureMonthOpen(wizard.date.slice(0,7),'aggiungere una lezione'))return;
+  const newApps=[];
+  for(const t of selected){
+    const valid=wizardTimeOptions().some(x=>x.time===t);if(!valid){toast(`${t} non è più disponibile`);return}
+    let base=wizard.baseDuration,units=wizard.lessonUnits,duration=wizard.duration,mode=wizard.quickDuplicate?wizard.mode:(wizard.timeModes?.[t]||null);
+    if(wizard.lessonType==='collective'){
+      const info=collectiveSlotInfo(t);if(info?.target){base=lessonBaseMinutes(info.target);units=lessonUnitCount(info.target);duration=Number(info.target.duration)||duration;mode=info.target.mode}
+    }
+    if(mode!=='presence'&&mode!=='dad'){toast(`Scegli DAD o presenza per le ${t}`);return}
+    newApps.push({id:uid(),date:wizard.date,time:t,baseDuration:base,lessonUnits:units,duration,mode,repeatWeeks:Math.max(1,Number(wizard.repeatWeeks)||1),seriesId:null});
+  }
+  wizard.appointments.push(...newApps);
+  const hard=analyzeWizardConflicts().filter(x=>x.hard);
+  if(hard.length){wizard.appointments.splice(wizard.appointments.length-newApps.length,newApps.length);toast(`Conflitto su ${fmtDate(hard[0].date)} alle ${hard[0].time}`);return}
+  wizard.date='';wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.repeatWeeks=1;wizard.plannerStage='day';if(!wizard.quickDuplicate)wizard.mode=null;renderWizard();toast(`${newApps.length} ${newApps.length===1?'appuntamento aggiunto':'appuntamenti aggiunti'}`);
+}
 function addWizardAppointment(){
   if(!wizard.date){toast('Scegli il giorno');return}
   if(!wizard.time){toast('Scegli l’orario');return}
@@ -588,13 +655,13 @@ function addWizardAppointment(){
   wizard.appointments.push(ap);
   const hard=analyzeWizardConflicts().filter(x=>x.hard);
   if(hard.length){wizard.appointments.pop();toast(`Conflitto su ${fmtDate(hard[0].date)} alle ${hard[0].time}`);renderWizard();return}
-  wizard.date='';wizard.time='';wizard.repeatWeeks=1;if(!wizard.quickDuplicate)wizard.mode=null;renderWizard();toast('Appuntamento aggiunto');
+  wizard.date='';wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.repeatWeeks=1;wizard.plannerStage='day';if(!wizard.quickDuplicate)wizard.mode=null;renderWizard();toast('Appuntamento aggiunto');
 }
 function removeWizardAppointment(id){wizard.appointments=(wizard.appointments||[]).filter(x=>x.id!==id);renderWizard()}
 function finishWizardPlanning(){
   if(!(wizard.appointments||[]).length){toast('Aggiungi almeno un appuntamento');return}
-  if(wizard.quickDuplicate){wizard.step=5;renderWizard();return}
-  wizard.step=(allWizardStudentsMonthly()||wizard.lessonType==='collective')?5:4;renderWizard();
+  if(wizard.quickDuplicate){wizard.step=5;wizard.plannerStage='day';renderWizard();return}
+  wizard.step=(allWizardStudentsMonthly()||wizard.lessonType==='collective')?5:4;wizard.plannerStage='day';renderWizard();
 }
 function wizardNextRate(){if(!wizardNonMonthlyIds().length){wizard.rateType='monthly';wizard.step=5;renderWizard();return}if(!['individual','regular'].includes(wizard.rateType)){toast('Scegli Individuale €20 oppure Cliente abituale €15');return}wizard.step=5;renderWizard()}
 function timeToMinutes(t){const [h,m]=String(t||'00:00').split(':').map(Number);return h*60+m}
@@ -752,7 +819,7 @@ function startDuplicateLesson(id){
   const l=data.lessons.find(x=>x.id===id);if(!l)return;
   const billable=l.studentIds.filter(sid=>!studentIsMonthlyInLesson(l,sid));
   if(billable.length&&!hasValidPricing(l)){toast('Imposta prima la tariffa della lezione da duplicare');return}
-  wizard={step:1,introStep:'type',studentIds:[...l.studentIds],appointments:[],date:'',time:'',baseDuration:lessonBaseMinutes(l),lessonUnits:lessonUnitCount(l),duration:Number(l.duration)||60,mode:l.mode,rateType:l.rateType,repeatWeeks:1,recoveryOf:null,lessonType:lessonIsCollective(l)?'collective':'individual',quickDuplicate:true,duplicateSourceId:id};
+  wizard={step:1,introStep:'type',studentIds:[...l.studentIds],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},plannerStage:'day',baseDuration:lessonBaseMinutes(l),lessonUnits:lessonUnitCount(l),duration:Number(l.duration)||60,mode:l.mode,rateType:l.rateType,repeatWeeks:1,recoveryOf:null,lessonType:lessonIsCollective(l)?'collective':'individual',quickDuplicate:true,duplicateSourceId:id};
   modalStack=[];renderWizard();toast('Duplica: scegli solo giorno e ora');
 }
 function openLesson(id,replace=false){
@@ -787,7 +854,7 @@ function openRecoveries(){
 }
 function startRecovery(id){
   const l=data.lessons.find(x=>x.id===id);if(!l)return;
-  wizard={step:1,introStep:'type',studentIds:[...l.studentIds],appointments:[],date:'',time:'',baseDuration:lessonBaseMinutes(l),lessonUnits:lessonUnitCount(l),duration:Number(l.duration)||60,mode:l.mode,rateType:l.rateType,repeatWeeks:1,recoveryOf:id,lessonType:lessonIsCollective(l)?'collective':'individual',quickDuplicate:false,duplicateSourceId:null};
+  wizard={step:1,introStep:'type',studentIds:[...l.studentIds],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},plannerStage:'day',baseDuration:lessonBaseMinutes(l),lessonUnits:lessonUnitCount(l),duration:Number(l.duration)||60,mode:l.mode,rateType:l.rateType,repeatWeeks:1,recoveryOf:id,lessonType:lessonIsCollective(l)?'collective':'individual',quickDuplicate:false,duplicateSourceId:null};
   modalStack=[];renderWizard();toast('Scegli uno o più appuntamenti di recupero');
 }
 function openLessonEdit(id){
