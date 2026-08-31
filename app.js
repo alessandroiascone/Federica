@@ -2,6 +2,7 @@ const STORE='math_lessons_mobile_v4';
 const LEGACY_STORE='math_lessons_mobile_v3';
 const HISTORY_STORE='math_lessons_safety_history_v4';
 const MAX_HISTORY=20;
+const MAX_COLLECTIVE_STUDENTS=6;
 
 const days=['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
 const months=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
@@ -15,7 +16,7 @@ function defaultData(){
     lessons:[],
     payments:{},
     monthClosures:{},
-    settings:{start:'09:30',end:'20:30',step:30,dadLink:'https://meet.google.com/'},
+    settings:{start:'09:00',end:'20:00',step:30,dadLink:'https://meet.google.com/'},
     meta:{schema:10,createdAt:new Date().toISOString(),lastBackupAt:null,migratedLegacy:false}
   };
 }
@@ -71,7 +72,7 @@ function migrateData(){
   data.lessons=Array.isArray(data.lessons)?data.lessons:[];
   data.payments=data.payments&&typeof data.payments==='object'?data.payments:{};
   data.monthClosures=data.monthClosures&&typeof data.monthClosures==='object'?data.monthClosures:{};
-  data.settings=Object.assign({start:'09:30',end:'20:30',step:30,dadLink:'https://meet.google.com/'},data.settings||{});data.settings.start='09:30';data.settings.end='20:30';data.settings.step=30;
+  data.settings=Object.assign({start:'09:00',end:'20:00',step:30,dadLink:'https://meet.google.com/'},data.settings||{});data.settings.start='09:00';data.settings.end='20:00';data.settings.step=30;
   data.meta=Object.assign({schema:10,lastBackupAt:null},data.meta||{});data.meta.schema=10;
   data.students.forEach(s=>{
     if(typeof s.active==='undefined')s.active=true;
@@ -341,18 +342,40 @@ function modalBack(){
 function closeModal(){document.getElementById('modal').classList.remove('show');modalStack=[]}
 
 function renderAll(){renderHome();renderStudents();renderAgenda();renderPayments()}
+function futureStartAllowedForToday(dk,t){
+  if(dk!==dateKey(new Date()))return true;
+  const now=new Date(),mins=now.getHours()*60+now.getMinutes();
+  return timeToMinutes(t)>=Math.ceil(mins/30)*30;
+}
+function dayAvailabilityInfo(dk){
+  const dayLessons=data.lessons.filter(l=>l.date===dk&&l.status!=='cancelled');
+  const freeStarts=allowedLessonTimes().filter(t=>futureStartAllowedForToday(dk,t)&&timeFitsAvailability(t,60)&&!dayLessons.some(l=>timeRangesOverlap(t,60,l.time,l.duration)));
+  const collectiveSlots=dayLessons.filter(l=>lessonIsCollective(l)&&l.studentIds.length<MAX_COLLECTIVE_STUDENTS&&futureStartAllowedForToday(dk,l.time)&&timeFitsAvailability(l.time,Number(l.duration)||60)).map(l=>({lesson:l,freePlaces:MAX_COLLECTIVE_STUDENTS-l.studentIds.length}));
+  return {available:freeStarts.length>0||collectiveSlots.length>0,freeStarts,collectiveSlots};
+}
+function openDayAvailability(dk){
+  const info=dayAvailabilityInfo(dk);
+  const freeHtml=info.freeStarts.length?`<div class="section-title"><h2>Orari liberi</h2><span style="color:var(--muted);font-size:12px">almeno 1 ora</span></div><div class="availability-pills">${info.freeStarts.map(t=>`<button class="availability-slot free" onclick="startLessonFromAvailability('${dk}','${t}','free')"><b>${t}–${endTimeFromStart(t,60)}</b><small>Libero · aggiungi lezione</small></button>`).join('')}</div>`:'';
+  const collHtml=info.collectiveSlots.length?`<div class="section-title"><h2>Collettive con posto</h2><span style="color:var(--muted);font-size:12px">max ${MAX_COLLECTIVE_STUDENTS}</span></div><div class="availability-pills">${info.collectiveSlots.map(x=>`<button class="availability-slot collective" onclick="startLessonFromAvailability('${dk}','${x.lesson.time}','collective','${x.lesson.id}')"><b>${x.lesson.time} · ${x.lesson.studentIds.length}/${MAX_COLLECTIVE_STUDENTS}</b><small>${x.freePlaces} ${x.freePlaces===1?'posto libero':'posti liberi'} · ${x.lesson.mode==='dad'?'DAD':'Presenza'}</small></button>`).join('')}</div>`:'';
+  showModal(`<h2>Disponibilità</h2><p class="sub">${fmtDate(dk)} · orari di lavoro 09:00–13:00 e 16:00–20:00.</p>${info.available?`<div class="availability-banner ok"><span class="availability-status-dot"></span><b>Ci sono disponibilità</b></div>${freeHtml}${collHtml}`:`<div class="availability-banner full"><span class="availability-status-dot"></span><div><b>Disponibilità terminate</b><small>Nessun blocco libero di almeno 1 ora e nessuna collettiva con posti disponibili.</small></div></div>`}<button class="cta secondary" onclick="modalBack()">Indietro</button>`);
+}
+function startLessonFromAvailability(dk,t,kind,targetId=''){
+  closeModal();
+  wizard={step:0,introStep:'students',studentIds:[],appointments:[],date:dk,time:'',selectedTimes:[],timeModes:{},plannerStage:'day',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null,quickDuplicate:false,duplicateSourceId:null,availabilityPreset:{date:dk,time:t,kind,targetId}};
+  modalStack=[];renderWizard();
+}
 function renderHome(){
   const now=new Date(),k=dateKey(now);
   document.getElementById('todayLabel').textContent=`📅 ${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()].toLowerCase()}`;
   const ls=data.lessons.filter(l=>l.date===k&&l.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));
   const weekDays=[];
-  for(let i=0;i<7;i++){
+  for(let i=0;i<14;i++){
     const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i),dk=dateKey(d);
     const dayLessons=data.lessons.filter(l=>l.date===dk&&l.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));
     weekDays.push({d,dk,lessons:dayLessons});
   }
   const weekCount=weekDays.reduce((n,x)=>n+x.lessons.reduce((a,l)=>a+lessonUnitCount(l),0),0),todayUnits=ls.reduce((a,l)=>a+lessonUnitCount(l),0);
-  document.getElementById('todayCount').textContent=`${weekCount} ${weekCount===1?'lezione':'lezioni'} nei prossimi 7 gg`;
+  document.getElementById('todayCount').textContent=`${weekCount} ${weekCount===1?'lezione':'lezioni'} nei prossimi 14 gg`;
   document.getElementById('statToday').textContent=todayUnits;
   document.getElementById('statWeek').textContent=weekCount;
   document.getElementById('statStudents').textContent=activeStudents().length;
@@ -379,8 +402,9 @@ function renderHome(){
   weekBox.innerHTML=weekDays.map((x,i)=>{
     const first=x.lessons[0],names=first?lessonStudentNames(first):'';
     const detail=first?`${first.time} · ${names}${x.lessons.length>1?` · +${x.lessons.length-1} altra/e`:''}`:'Nessuna lezione';
-    const mode=first?`${first.mode==='dad'?'DAD':'Presenza'}${lessonIsCollective(first)?' · collettiva':''}`:'Tocca per vedere il giorno';
-    const dayUnits=x.lessons.reduce((a,l)=>a+lessonUnitCount(l),0);return `<button class="week-row ${i===0?'today-row':''} ${x.lessons.length?'has-lessons':''}" onclick="renderSummaryModal('${x.dk}')"><span class="week-date"><b>${x.d.getDate()}</b><small>${days[x.d.getDay()].slice(0,3)}</small></span><span class="week-info"><b>${esc(detail)}</b><small>${esc(mode)}</small></span><span class="week-count">${dayUnits||'–'}</span></button>`;
+    const mode=first?`${first.mode==='dad'?'DAD':'Presenza'}${lessonIsCollective(first)?' · collettiva':''}`:'Nessuna lezione programmata';
+    const dayUnits=x.lessons.reduce((a,l)=>a+lessonUnitCount(l),0),availability=dayAvailabilityInfo(x.dk);
+    return `<div class="week-row ${i===0?'today-row':''} ${x.lessons.length?'has-lessons':''}" onclick="renderSummaryModal('${x.dk}')"><span class="week-date"><b>${x.d.getDate()}</b><small>${days[x.d.getDay()].slice(0,3)}</small></span><span class="week-info"><b>${esc(detail)}</b><small>${esc(mode)}</small></span><span class="week-actions"><span class="week-count">${dayUnits||'–'}</span><button class="availability-dot ${availability.available?'available':'full'}" onclick="event.stopPropagation();openDayAvailability('${x.dk}')" aria-label="${availability.available?'Disponibilità presenti':'Disponibilità terminate'}" title="${availability.available?'Disponibilità presenti':'Disponibilità terminate'}"></button></span></div>`;
   }).join('');
 }
 function lessonCard(l){
@@ -483,7 +507,7 @@ function wizardBack(){
 }
 function timeFitsAvailability(t,duration){
   const start=timeToMinutes(t),end=start+(Number(duration)||60);
-  return (start>=timeToMinutes('09:30')&&end<=timeToMinutes('13:30'))||(start>=timeToMinutes('15:00')&&end<=timeToMinutes('20:30'));
+  return (start>=timeToMinutes('09:00')&&end<=timeToMinutes('13:00'))||(start>=timeToMinutes('16:00')&&end<=timeToMinutes('20:00'));
 }
 function allowedStartTimesForDuration(duration){return allowedLessonTimes().filter(t=>timeFitsAvailability(t,duration))}
 function appointmentOccurrences(ap){
@@ -505,8 +529,10 @@ function collectiveSlotInfo(t){
     const otherOverlaps=dayLessons.filter(l=>l.id!==target.id&&timeRangesOverlap(t,target.duration,l.time,l.duration));
     if(!otherOverlaps.length){
       if(target.studentIds.some(id=>wizard.studentIds.includes(id)))return {time:t,state:'blocked',target:null,label:'alunno già presente'};
+      const newIds=wizard.studentIds.filter(id=>!target.studentIds.includes(id));
+      if(target.studentIds.length>=MAX_COLLECTIVE_STUDENTS||target.studentIds.length+newIds.length>MAX_COLLECTIVE_STUDENTS)return {time:t,state:'blocked',target:null,label:`collettiva piena · max ${MAX_COLLECTIVE_STUDENTS}`};
       if(wizard.quickDuplicate&&(Number(target.duration)!==Number(wizard.duration)||target.mode!==wizard.mode))return {time:t,state:'blocked',target:null,label:'slot collettivo diverso'};
-      return {time:t,state:'join',target,label:`già aperta · ${target.studentIds.length} ${target.studentIds.length===1?'alunno':'alunni'} · ${lessonUnitsLabel(target)} · ${target.mode==='dad'?'DAD':'Presenza'}`};
+      return {time:t,state:'join',target,label:`già aperta · ${target.studentIds.length}/${MAX_COLLECTIVE_STUDENTS} alunni · ${lessonUnitsLabel(target)} · ${target.mode==='dad'?'DAD':'Presenza'}`};
     }
   }
   const overlaps=dayLessons.filter(l=>timeRangesOverlap(t,wizard.duration,l.time,l.duration));
@@ -598,8 +624,8 @@ function renderWizard(){
     if(wizard.introStep!=='type'){
       replaceModal(`${wizardDots()}<h2>Seleziona alunno/i</h2><p class="sub">Scegli uno o più alunni. Se non è ancora presente, puoi aggiungerlo qui.</p>${activeStudents().sort((a,b)=>a.name.localeCompare(b.name)).map(st=>`<label class="studentpick"><input type="checkbox" ${wizard.studentIds.includes(st.id)?'checked':''} onchange="toggleWizardStudent('${st.id}',this.checked)"><span>${esc(st.name)}${studentBillingType(st)==='monthly'?` · <b>Mensile ${fmtEuro(monthlyAmountForStudent(st))}</b>`:''}</span></label>`).join('')}<button class="cta secondary" onclick="openStudentFormFromWizard()">＋ Aggiungi alunno</button><div class="sticky-actions"><button class="cta" onclick="wizardNextStudents()">Continua</button></div>`);
     }else{
-      const many=wizard.studentIds.length>1;
-      replaceModal(`${wizardDots()}<h2>Tipo di lezione</h2><p class="sub">${many?'Hai selezionato più alunni: la lezione sarà collettiva.':'Scegli come verranno svolti gli appuntamenti.'}</p><div class="choices"><button class="choice ${wizard.lessonType==='individual'?'selected':''} ${many?'disabled':''}" ${many?'disabled':''} onclick="chooseWizardLessonType('individual')"><b>👤 Individuale</b><small>1 alunno · solo slot liberi</small></button><button class="choice ${wizard.lessonType==='collective'?'selected':''}" onclick="chooseWizardLessonType('collective')"><b>👥 Collettiva</b><small>1 o più alunni · anche slot collettivi già aperti</small></button></div>${many?`<div class="note"><b>${wizard.studentIds.length} alunni selezionati:</b> scegli Collettiva per continuare.</div>`:''}`);
+      const many=wizard.studentIds.length>1,presetCollective=wizard.availabilityPreset?.kind==='collective';
+      replaceModal(`${wizardDots()}<h2>Tipo di lezione</h2><p class="sub">${presetCollective?'Hai scelto un posto libero in una collettiva già aperta.':many?'Hai selezionato più alunni: la lezione sarà collettiva.':'Scegli come verranno svolti gli appuntamenti.'}</p><div class="choices"><button class="choice ${wizard.lessonType==='individual'?'selected':''} ${(many||presetCollective)?'disabled':''}" ${(many||presetCollective)?'disabled':''} onclick="chooseWizardLessonType('individual')"><b>👤 Individuale</b><small>1 alunno · solo slot liberi</small></button><button class="choice ${wizard.lessonType==='collective'?'selected':''}" onclick="chooseWizardLessonType('collective')"><b>👥 Collettiva</b><small>1 o più alunni · max ${MAX_COLLECTIVE_STUDENTS}</small></button></div>${many?`<div class="note"><b>${wizard.studentIds.length} alunni selezionati:</b> scegli Collettiva per continuare.</div>`:''}${presetCollective?`<div class="note"><b>Slot selezionato:</b> ${fmtDate(wizard.availabilityPreset.date)} · ${wizard.availabilityPreset.time}. Continua come collettiva.</div>`:''}`);
     }
   }else if(wizard.step===1){
     replaceModal(renderWizardPlanner());
@@ -615,9 +641,18 @@ function renderWizard(){
 }
 function chooseWizardLessonType(type){
   if(!['individual','collective'].includes(type))return;
-  if(type==='individual'&&wizard.studentIds.length!==1){toast('Per Individuale seleziona un solo alunno');return}
+  if(type==='individual'&&wizard.studentIds.length!==1){toast('Per Individuale seleziona un solo alunno');return}if(type==='collective'&&wizard.studentIds.length>MAX_COLLECTIVE_STUDENTS){toast(`Massimo ${MAX_COLLECTIVE_STUDENTS} alunni in collettiva`);return}
   wizard.lessonType=type;wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.plannerStage='day';wizard.mode=null;wizard.appointments=[];
   applyAutomaticWizardRate();
+  if(wizard.availabilityPreset){
+    if(wizard.availabilityPreset.kind==='collective'&&type!=='collective'){toast('Questo posto è disponibile in una collettiva: scegli Collettiva');return}
+    if(wizard.availabilityPreset.kind==='collective'){
+      const target=data.lessons.find(l=>l.id===wizard.availabilityPreset.targetId);
+      const additions=target?wizard.studentIds.filter(id=>!target.studentIds.includes(id)).length:0;
+      if(target&&target.studentIds.length+additions>MAX_COLLECTIVE_STUDENTS){toast(`In questa collettiva restano solo ${MAX_COLLECTIVE_STUDENTS-target.studentIds.length} posti`);return}
+    }
+    wizard.date=wizard.availabilityPreset.date;wizard.selectedTimes=[wizard.availabilityPreset.time];wizard.plannerStage='times';
+  }
   wizard.step=1;renderWizard();
 }
 function toggleWizardStudent(id,on){if(on&&!wizard.studentIds.includes(id))wizard.studentIds.push(id);if(!on)wizard.studentIds=wizard.studentIds.filter(x=>x!==id)}
@@ -631,7 +666,7 @@ function saveStudentFromWizard(){
   const st=Object.assign({id:uid(),name,phone:document.getElementById('wfPhone').value.trim(),parentPhone:document.getElementById('wfParent').value.trim(),active:true},billing);
   data.students.push(st);if(!wizard.studentIds.includes(st.id))wizard.studentIds.push(st.id);if(st.billingType==='monthly'&&wizard.studentIds.length===1){wizard.mode=null;wizard.baseDuration=[60,90].includes(Number(st.monthlyDuration))?Number(st.monthlyDuration):60;wizard.lessonUnits=1;wizard.duration=wizard.baseDuration;wizard.rateType='monthly'}save('Nuovo alunno durante lezione');if(modalStack.length)modalStack.pop();renderWizard();
 }
-function wizardNextStudents(){if(!wizard.studentIds.length){toast('Seleziona almeno un alunno');return}wizard.lessonType=null;wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.plannerStage='day';wizard.mode=null;wizard.rateType=null;wizard.appointments=[];wizard.introStep='type';wizard.step=0;renderWizard()}
+function wizardNextStudents(){if(!wizard.studentIds.length){toast('Seleziona almeno un alunno');return}if(wizard.studentIds.length>MAX_COLLECTIVE_STUDENTS){toast(`Una collettiva può avere massimo ${MAX_COLLECTIVE_STUDENTS} alunni`);return}wizard.lessonType=null;wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.plannerStage='day';wizard.mode=null;wizard.rateType=null;wizard.appointments=[];wizard.introStep='type';wizard.step=0;renderWizard()}
 function addWizardAppointmentsBatch(){
   const selected=[...(wizard.selectedTimes||[])].sort();if(!wizard.date){toast('Scegli il giorno');return}if(!selected.length){toast('Seleziona almeno un orario');return}
   if(!ensureMonthOpen(wizard.date.slice(0,7),'aggiungere una lezione'))return;
@@ -648,7 +683,7 @@ function addWizardAppointmentsBatch(){
   wizard.appointments.push(...newApps);
   const hard=analyzeWizardConflicts().filter(x=>x.hard);
   if(hard.length){wizard.appointments.splice(wizard.appointments.length-newApps.length,newApps.length);toast(`Conflitto su ${fmtDate(hard[0].date)} alle ${hard[0].time}`);return}
-  wizard.date='';wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.repeatWeeks=1;wizard.plannerStage='day';if(!wizard.quickDuplicate)wizard.mode=null;renderWizard();toast(`${newApps.length} ${newApps.length===1?'appuntamento aggiunto':'appuntamenti aggiunti'}`);
+  wizard.availabilityPreset=null;wizard.date='';wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.repeatWeeks=1;wizard.plannerStage='day';if(!wizard.quickDuplicate)wizard.mode=null;renderWizard();toast(`${newApps.length} ${newApps.length===1?'appuntamento aggiunto':'appuntamenti aggiunti'}`);
 }
 function addWizardAppointment(){
   if(!wizard.date){toast('Scegli il giorno');return}
@@ -682,20 +717,25 @@ function analyzeWizardConflicts(){
     const overlaps=data.lessons.filter(l=>l.status!=='cancelled'&&l.date===o.date&&timeRangesOverlap(o.time,o.duration,l.time,l.duration));
     const sameStudent=overlaps.filter(l=>l.studentIds.some(id=>wizard.studentIds.includes(id)));
     const exact=overlaps.filter(l=>l.time===o.time&&Number(l.duration)===Number(o.duration)&&l.mode===o.mode&&!l.studentIds.some(id=>wizard.studentIds.includes(id)));
-    const mergeTarget=wizard.lessonType==='collective'&&!sameStudent.length&&overlaps.length===1&&exact.length===1?exact[0]:null;
+    const possibleTarget=wizard.lessonType==='collective'&&!sameStudent.length&&overlaps.length===1&&exact.length===1?exact[0]:null;
+    const additions=possibleTarget?wizard.studentIds.filter(id=>!possibleTarget.studentIds.includes(id)).length:0;
+    const capacityOk=!possibleTarget||possibleTarget.studentIds.length+additions<=MAX_COLLECTIVE_STUDENTS;
+    const mergeTarget=possibleTarget&&capacityOk?possibleTarget:null;
+    const capacityFull=!!possibleTarget&&!capacityOk;
     const internal=occ.filter((x,j)=>j!==idx&&x.date===o.date&&timeRangesOverlap(o.time,o.duration,x.time,x.duration));
-    return {...o,overlaps,sameStudent,mergeTarget,internal,hard:internal.length>0||!!sameStudent.length||(overlaps.length>0&&!mergeTarget)};
+    return {...o,overlaps,sameStudent,mergeTarget,capacityFull,internal,hard:internal.length>0||!!sameStudent.length||capacityFull||(overlaps.length>0&&!mergeTarget)};
   });
 }
 function conflictNames(items){return items.map(x=>`${fmtDate(x.date)} ${x.time}`).join(', ')}
 function openWizardConflict(conflicts){
   const hard=conflicts.filter(x=>x.hard),mergeable=conflicts.filter(x=>x.mergeTarget);
-  const html=`<h2>Controllo sovrapposizioni</h2><p class="sub">Controllo tutti gli appuntamenti e le ricorrenze prima di salvarli.</p>${hard.length?`<div class="note warning-note"><b>Da correggere:</b><br>${hard.map(x=>`${fmtDate(x.date)} · ${x.time}: ${x.internal?.length?'si sovrappone a un altro appuntamento inserito nello stesso flusso':x.sameStudent.length?'uno degli alunni è già inserito':'c’è già una lezione che si sovrappone'}`).join('<br>')}</div>`:''}${mergeable.length?`<div class="note"><b>${mergeable.length} slot collettivi già aperti.</b><br>Posso aggiungere gli alunni selezionati alle lezioni esistenti nello stesso orario.</div>`:''}${!hard.length&&mergeable.length?`<button class="cta" onclick="commitWizardLessons(true)">👥 Unisci agli slot collettivi</button>`:''}<button class="cta secondary" onclick="closeModal();wizard.step=1;renderWizard()">Modifica appuntamenti</button>`;
+  const html=`<h2>Controllo sovrapposizioni</h2><p class="sub">Controllo tutti gli appuntamenti e le ricorrenze prima di salvarli.</p>${hard.length?`<div class="note warning-note"><b>Da correggere:</b><br>${hard.map(x=>`${fmtDate(x.date)} · ${x.time}: ${x.internal?.length?'si sovrappone a un altro appuntamento inserito nello stesso flusso':x.sameStudent.length?'uno degli alunni è già inserito':x.capacityFull?`la collettiva supererebbe il massimo di ${MAX_COLLECTIVE_STUDENTS} alunni`:'c’è già una lezione che si sovrappone'}`).join('<br>')}</div>`:''}${mergeable.length?`<div class="note"><b>${mergeable.length} slot collettivi già aperti.</b><br>Posso aggiungere gli alunni selezionati alle lezioni esistenti nello stesso orario.</div>`:''}${!hard.length&&mergeable.length?`<button class="cta" onclick="commitWizardLessons(true)">👥 Unisci agli slot collettivi</button>`:''}<button class="cta secondary" onclick="closeModal();wizard.step=1;renderWizard()">Modifica appuntamenti</button>`;
   showModal(html);
 }
 function mergeStudentsIntoLesson(target){
   target.lessonType='collective';
   const monthlyIds=wizardMonthlyIds(),newIds=wizard.studentIds.filter(id=>!target.studentIds.includes(id));
+  if(target.studentIds.length+newIds.length>MAX_COLLECTIVE_STUDENTS){toast(`Collettiva piena: massimo ${MAX_COLLECTIVE_STUDENTS} alunni`);return false}
   target.studentIds=[...target.studentIds,...newIds];target.monthlyStudentIds=[...new Set([...lessonMonthlyIds(target),...monthlyIds])];target.monthlyAmountsByStudent=Object.assign({},target.monthlyAmountsByStudent||{});
   monthlyIds.forEach(id=>{const st=studentById(id),amt=monthlyAmountForStudent(st);target.monthlyAmountsByStudent[id]=amt;ensureMonthlyPayment(id,target.date.slice(0,7),amt)});
   const billable=target.studentIds.filter(id=>!target.monthlyStudentIds.includes(id));if(billable.length){target.rateType='collective';target.pricePerStudent=10;target.pricingMissing=false}else{target.rateType='monthly';target.pricePerStudent=0;target.pricingMissing=false}
@@ -726,7 +766,7 @@ function confirmWizard(){
   const analysis=analyzeWizardConflicts(),conflicts=analysis.filter(x=>x.hard||x.mergeTarget);if(conflicts.length){openWizardConflict(conflicts);return}commitWizardLessons(false);
 }
 function makeTimes(start,end,step){let [sh,sm]=start.split(':').map(Number),[eh,em]=end.split(':').map(Number),a=[],m=sh*60+sm,e=eh*60+em;for(;m<=e;m+=step)a.push(`${pad(Math.floor(m/60))}:${pad(m%60)}`);return a}
-function allowedLessonTimes(){return [...makeTimes('09:30','13:30',30),...makeTimes('15:00','20:30',30)]}
+function allowedLessonTimes(){return [...makeTimes('09:00','12:00',30),...makeTimes('16:00','19:00',30)]}
 function durationLabel(v){if(v<60)return `${v} min`;const h=Math.floor(v/60),m=v%60;return m?`${h}h ${m}m`:`${h} ${h===1?'ora':'ore'}`}
 function fmtHours(v){return `${Number(v.toFixed(2)).toString().replace('.',',')}h`}
 function rateLabel(type){return RATE_LABELS[type]||'Tariffa da impostare'}
@@ -916,13 +956,13 @@ function saveLessonEdit(id){
   const l=data.lessons.find(x=>x.id===id);if(!l)return;if(!lessonMonthOpen(l,'modificare la lezione'))return;
   const ids=editSelectedStudentIds();if(!ids.length){toast('Seleziona almeno un alunno');return}
   const editType=document.getElementById('editLessonType')?.value||'individual';
-  if(editType==='individual'&&ids.length!==1){toast('La lezione individuale richiede un solo alunno');return}
+  if(editType==='individual'&&ids.length!==1){toast('La lezione individuale richiede un solo alunno');return}if(editType==='collective'&&ids.length>MAX_COLLECTIVE_STUDENTS){toast(`Una collettiva può avere massimo ${MAX_COLLECTIVE_STUDENTS} alunni`);return}
   const oldMonthly=lessonMonthlyIds(l),monthlyIds=ids.filter(sid=>oldMonthly.includes(sid)||isMonthlyStudent(sid)),billableIds=ids.filter(sid=>!monthlyIds.includes(sid));
   const rate=automaticEditRate(l,ids,editType,monthlyIds);
   const newDate=document.getElementById('editDate').value,monthlyAmountsByStudent={};if(!ensureMonthOpen(newDate.slice(0,7),'spostare la lezione'))return;
   monthlyIds.forEach(sid=>{monthlyAmountsByStudent[sid]=Number(l.monthlyAmountsByStudent?.[sid])||monthlyAmountForStudent(studentById(sid));ensureMonthlyPayment(sid,newDate.slice(0,7),monthlyAmountsByStudent[sid])});
   const editBase=Number(document.getElementById('editBaseDuration').value)||60,editUnits=Number(document.getElementById('editLessonUnits').value)||1,editDuration=lessonTotalMinutes(editBase,editUnits),editTime=document.getElementById('editTime').value;
-  if(!timeFitsAvailability(editTime,editDuration)){toast('Questo blocco non entra negli orari 09:30–13:30 o 15:00–20:30');return}
+  if(!timeFitsAvailability(editTime,editDuration)){toast('Questo blocco non entra negli orari 09:00–13:00 o 16:00–20:00');return}
   const conflicts=data.lessons.filter(x=>x.id!==l.id&&x.status!=='cancelled'&&x.date===newDate&&timeRangesOverlap(editTime,editDuration,x.time,x.duration));
   if(conflicts.length){toast('La modifica si sovrappone a un’altra lezione');return}
   l.studentIds=ids;l.monthlyStudentIds=monthlyIds;l.monthlyAmountsByStudent=monthlyAmountsByStudent;l.date=newDate;l.time=editTime;l.baseDuration=editBase;l.lessonUnits=editUnits;l.duration=editDuration;l.mode=document.getElementById('editMode').value;l.lessonType=editType;l.rateType=billableIds.length?rate:'monthly';l.pricePerStudent=billableIds.length?rateAmount(rate):0;l.pricingMissing=false;l.updatedAt=new Date().toISOString();
@@ -1095,9 +1135,9 @@ function exportMonthCSV(mk){
 }
 function openSettings(){
   const hist=loadHistory(),lastBackup=data.meta?.lastBackupAt;
-  showModal(`<h2>Impostazioni</h2><p class="sub">Link DAD e sicurezza dei dati.</p><div class="note"><b>🕘 Orari lezioni fissi</b><br>09:30–13:30 · 15:00–20:30<br><small>Gli altri orari sono stati rimossi dal gestionale.</small></div><div class="field"><label>Link fisso DAD</label><input class="input" id="setDad" value="${esc(data.settings.dadLink||'')}" placeholder="https://..."></div><button class="cta" onclick="saveSettings()">Salva impostazioni</button><div class="section-title"><h2>Sicurezza dati</h2></div><div class="note"><b>Ultimo backup esterno:</b> ${lastBackup?fmtDateTime(lastBackup):'mai'}.<br>I salvataggi automatici sul telefono aiutano contro errori, ma non proteggono da perdita/guasto del telefono.</div><div class="sendgrid"><button class="smallbtn" onclick="exportBackup()">⬇ Esporta backup</button><button class="smallbtn" onclick="shareBackup()">↗ Condividi backup</button></div><div class="sendgrid"><button class="smallbtn" onclick="document.getElementById('importFile').click()">⬆ Importa backup</button><button class="smallbtn" onclick="openSafetyHistory()">↶ Cronologia (${hist.length})</button></div>`);
+  showModal(`<h2>Impostazioni</h2><p class="sub">Link DAD e sicurezza dei dati.</p><div class="note"><b>🕘 Orari lezioni fissi</b><br>09:00–13:00 · 16:00–20:00<br><small>Le disponibilità vengono calcolate solo dentro queste fasce.</small></div><div class="field"><label>Link fisso DAD</label><input class="input" id="setDad" value="${esc(data.settings.dadLink||'')}" placeholder="https://..."></div><button class="cta" onclick="saveSettings()">Salva impostazioni</button><div class="section-title"><h2>Sicurezza dati</h2></div><div class="note"><b>Ultimo backup esterno:</b> ${lastBackup?fmtDateTime(lastBackup):'mai'}.<br>I salvataggi automatici sul telefono aiutano contro errori, ma non proteggono da perdita/guasto del telefono.</div><div class="sendgrid"><button class="smallbtn" onclick="exportBackup()">⬇ Esporta backup</button><button class="smallbtn" onclick="shareBackup()">↗ Condividi backup</button></div><div class="sendgrid"><button class="smallbtn" onclick="document.getElementById('importFile').click()">⬆ Importa backup</button><button class="smallbtn" onclick="openSafetyHistory()">↶ Cronologia (${hist.length})</button></div>`);
 }
-function saveSettings(){data.settings.start='09:30';data.settings.end='20:30';data.settings.step=30;data.settings.dadLink=document.getElementById('setDad').value.trim();save('Impostazioni');closeModal();toast('Impostazioni salvate')}
+function saveSettings(){data.settings.start='09:00';data.settings.end='20:00';data.settings.step=30;data.settings.dadLink=document.getElementById('setDad').value.trim();save('Impostazioni');closeModal();toast('Impostazioni salvate')}
 function backupPayload(){return JSON.stringify(data,null,2)}
 function markBackupDone(){data.meta=data.meta||{};data.meta.lastBackupAt=new Date().toISOString();persistNow();renderHome()}
 function downloadBlob(content,name,type){const blob=content instanceof Blob?content:new Blob([content],{type}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
