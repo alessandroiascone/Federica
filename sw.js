@@ -1,4 +1,4 @@
-const CACHE = 'lezioni-matematica-v7-7-disponibilita-14gg';
+const CACHE = 'lezioni-matematica-v7-7-1-collettiva-alunno';
 const APP_SHELL = [
   './',
   './index.html',
