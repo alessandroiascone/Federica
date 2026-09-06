@@ -16,7 +16,7 @@ function defaultData(){
     lessons:[],
     payments:{},
     monthClosures:{},
-    settings:{start:'09:00',end:'20:00',step:30,dadLink:'https://meet.google.com/'},
+    settings:{start:'09:00',end:'20:00',step:30},
     meta:{schema:10,createdAt:new Date().toISOString(),lastBackupAt:null,migratedLegacy:false}
   };
 }
@@ -63,6 +63,7 @@ let data=loadDataSafely();
 let agendaMode='today';
 let selectedPayMonth=monthKey(new Date());
 let wizard={step:0,studentIds:[],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},plannerStage:'day',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null,quickDuplicate:false,duplicateSourceId:null};
+let postBookingEntries=[];
 let currentPage='home';
 let pageStack=[];
 let modalStack=[];
@@ -72,7 +73,7 @@ function migrateData(){
   data.lessons=Array.isArray(data.lessons)?data.lessons:[];
   data.payments=data.payments&&typeof data.payments==='object'?data.payments:{};
   data.monthClosures=data.monthClosures&&typeof data.monthClosures==='object'?data.monthClosures:{};
-  data.settings=Object.assign({start:'09:00',end:'20:00',step:30,dadLink:'https://meet.google.com/'},data.settings||{});data.settings.start='09:00';data.settings.end='20:00';data.settings.step=30;
+  data.settings=Object.assign({start:'09:00',end:'20:00',step:30},data.settings||{});data.settings.start='09:00';data.settings.end='20:00';data.settings.step=30;delete data.settings.dadLink;
   data.meta=Object.assign({schema:10,lastBackupAt:null},data.meta||{});data.meta.schema=10;
   data.students.forEach(s=>{
     if(typeof s.active==='undefined')s.active=true;
@@ -603,8 +604,7 @@ function plannerModesHtml(){
     const info=wizard.lessonType==='collective'?collectiveSlotInfo(t):null,locked=wizard.quickDuplicate||!!info?.target,mode=wizard.quickDuplicate?wizard.mode:(wizard.timeModes?.[t]||info?.target?.mode||null),dur=info?.target?Number(info.target.duration)||wizard.duration:wizard.duration;
     return `<div class="mode-time-row"><div class="mode-time-head"><b>${t}–${endTimeFromStart(t,dur)}</b>${info?.target?'<small>👥 collettiva già aperta</small>':''}</div><div class="mode-pills"><button class="mode-pill ${mode==='presence'?'selected':''} ${locked&&mode!=='presence'?'disabled':''}" ${locked&&mode!=='presence'?'disabled':''} onclick="setWizardTimeMode('${t}','presence')">🏠 Presenza</button><button class="mode-pill ${mode==='dad'?'selected':''} ${locked&&mode!=='dad'?'disabled':''}" ${locked&&mode!=='dad'?'disabled':''} onclick="setWizardTimeMode('${t}','dad')">💻 DAD</button></div></div>`;
   }).join('');
-  const anyDad=selected.some(t=>(wizard.quickDuplicate?wizard.mode:wizard.timeModes?.[t])==='dad'||(wizard.lessonType==='collective'&&collectiveSlotInfo(t)?.target?.mode==='dad'));
-  return `${rows}${anyDad?`<div class="field"><label>Link DAD</label><input class="input" value="${esc(data.settings.dadLink||'')}" oninput="data.settings.dadLink=this.value"></div>`:''}`;
+  return rows;
 }
 function renderWizardPlanner(){
   wizard.plannerStage=wizard.plannerStage||'day';
@@ -740,6 +740,7 @@ function mergeStudentsIntoLesson(target){
   monthlyIds.forEach(id=>{const st=studentById(id),amt=monthlyAmountForStudent(st);target.monthlyAmountsByStudent[id]=amt;ensureMonthlyPayment(id,target.date.slice(0,7),amt)});
   const billable=target.studentIds.filter(id=>!target.monthlyStudentIds.includes(id));if(billable.length){target.rateType='collective';target.pricePerStudent=10;target.pricingMissing=false}else{target.rateType='monthly';target.pricePerStudent=0;target.pricingMissing=false}
   target.updatedAt=new Date().toISOString();target.mergedAt=target.updatedAt;
+  return newIds;
 }
 function buildLessonForOccurrence(o){
   const monthlyIds=wizardMonthlyIds(),nonMonthlyIds=wizardNonMonthlyIds(),price=nonMonthlyIds.length?rateAmount(wizard.rateType):0,monthlyAmountsByStudent={};
@@ -752,11 +753,21 @@ function commitWizardLessons(mergeExisting=false){
   const analysis=analyzeWizardConflicts();
   if(analysis.some(x=>x.hard)){openWizardConflict(analysis.filter(x=>x.hard||x.mergeTarget));return}
   if(analysis.some(x=>x.mergeTarget)&&!mergeExisting){openWizardConflict(analysis.filter(x=>x.mergeTarget));return}
-  const created=[];let merged=0;
-  for(const a of analysis){if(!ensureMonthOpen(a.date.slice(0,7),'aggiungere una lezione'))return;if(a.mergeTarget){mergeStudentsIntoLesson(a.mergeTarget);merged++;continue}const l=buildLessonForOccurrence(a);data.lessons.push(l);created.push(l);lessonMonthlyIds(l).forEach(id=>ensureMonthlyPayment(id,l.date.slice(0,7),l.monthlyAmountsByStudent[id]))}
+  const created=[];let merged=0;const messageEntries=[];
+  for(const a of analysis){
+    if(!ensureMonthOpen(a.date.slice(0,7),'aggiungere una lezione'))return;
+    if(a.mergeTarget){
+      const addedIds=mergeStudentsIntoLesson(a.mergeTarget);
+      if(addedIds===false)return;
+      if(Array.isArray(addedIds)&&addedIds.length)messageEntries.push({lessonId:a.mergeTarget.id,studentIds:[...addedIds]});
+      merged++;continue;
+    }
+    const l=buildLessonForOccurrence(a);data.lessons.push(l);created.push(l);messageEntries.push({lessonId:l.id,studentIds:[...wizard.studentIds]});lessonMonthlyIds(l).forEach(id=>ensureMonthlyPayment(id,l.date.slice(0,7),l.monthlyAmountsByStudent[id]));
+  }
   if(wizard.recoveryOf){const orig=data.lessons.find(l=>l.id===wizard.recoveryOf);if(orig){orig.recoveryScheduledAt=new Date().toISOString();orig.recoveryLessonIds=[...(orig.recoveryLessonIds||[]),...created.map(x=>x.id)]}}
   const total=created.length+merged;save(wizard.quickDuplicate?'Duplicazione lezione':wizard.recoveryOf?'Programmazione recupero':total>1?'Programmazione multipla':'Nuova lezione');closeModal();toast(total>1?`${total} appuntamenti registrati`:merged?'Alunno aggiunto alla lezione collettiva':created[0]?.status==='completed'?'Lezione passata registrata':'Lezione aggiunta');
-  if(total===1&&created.length===1&&created[0].status==='scheduled'&&!wizard.recoveryOf)setTimeout(()=>openSendForLesson(created[0].id),250);
+  postBookingEntries=messageEntries.filter(e=>{const l=data.lessons.find(x=>x.id===e.lessonId);return l&&l.status==='scheduled'&&!lessonHasEnded(l)&&e.studentIds?.length});
+  if(postBookingEntries.length&&!wizard.recoveryOf)setTimeout(()=>openPostBookingMessages(),250);
 }
 function confirmWizard(){
   if(!(wizard.appointments||[]).length){toast('Nessun appuntamento da salvare');return}
@@ -969,7 +980,51 @@ function saveLessonEdit(id){
   if(l.status==='completed'&&!lessonHasEnded(l)){l.status='scheduled';delete l.completedAt}
   save('Modifica lezione completa');modalStack.pop();openLesson(id,true);toast(editType==='collective'?'Lezione aggiornata come collettiva':'Lezione aggiornata come individuale');
 }
-function buildMessage(l,s){const kind=l.mode==='dad'?'in modalità DAD':'in presenza',group=lessonIsCollective(l)?' La lezione sarà collettiva.':'',units=lessonUnitCount(l)>1?` Sono ${lessonUnitCount(l)} lezioni consecutive da ${durationLabel(lessonBaseMinutes(l))} (${durationLabel(l.duration)} totali).`:'',link=l.mode==='dad'&&data.settings.dadLink?` Link: ${data.settings.dadLink}`:'';return `Ciao ${s.name.split(' ')[0]}, confermo la lezione di matematica per ${fmtDate(l.date)} dalle ${l.time} alle ${endTimeFromStart(l.time,l.duration)}, ${kind}.${group}${units}${link}`}
+function buildMessage(l,s){
+  const kind=l.mode==='dad'?'in modalità DAD':'in presenza',group=lessonIsCollective(l)?' La lezione sarà collettiva.':'',units=lessonUnitCount(l)>1?` Sono ${lessonUnitCount(l)} lezioni consecutive da ${durationLabel(lessonBaseMinutes(l))} (${durationLabel(l.duration)} totali).`:'';
+  return `Ciao ${s.name.split(' ')[0]}, confermo la lezione di matematica per ${fmtDate(l.date)} dalle ${l.time} alle ${endTimeFromStart(l.time,l.duration)}, ${kind}.${group}${units}`;
+}
+function weekStartKey(k){
+  const d=parseLocalDate(k),delta=(d.getDay()+6)%7;d.setDate(d.getDate()-delta);return dateKey(d);
+}
+function weekEndKey(startKey){const d=parseLocalDate(startKey);d.setDate(d.getDate()+6);return dateKey(d)}
+function fmtWeekRange(startKey){
+  const a=parseLocalDate(startKey),b=parseLocalDate(weekEndKey(startKey));
+  if(a.getMonth()===b.getMonth())return `${a.getDate()}–${b.getDate()} ${months[a.getMonth()].toLowerCase()}`;
+  return `${a.getDate()} ${months[a.getMonth()].toLowerCase()} – ${b.getDate()} ${months[b.getMonth()].toLowerCase()}`;
+}
+function postBookingLessonsForStudent(sid){
+  const seen=new Set(),out=[];
+  postBookingEntries.forEach(e=>{if(!e.studentIds?.includes(sid)||seen.has(e.lessonId))return;const l=data.lessons.find(x=>x.id===e.lessonId);if(l&&l.status==='scheduled'&&!lessonHasEnded(l)){seen.add(l.id);out.push(l)}});
+  return out.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+}
+function weeklyBookingGroupsForStudent(sid){
+  const groups={};postBookingLessonsForStudent(sid).forEach(l=>{const wk=weekStartKey(l.date);(groups[wk]||(groups[wk]=[])).push(l)});return groups;
+}
+function weeklyLessonLine(l){
+  const mode=l.mode==='dad'?'DAD':'Presenza',group=lessonIsCollective(l)?' · collettiva':'',units=lessonUnitCount(l)>1?` · ${lessonUnitsLabel(l)}`:'';
+  return `• ${fmtDate(l.date)} · ${l.time}–${endTimeFromStart(l.time,l.duration)} · ${mode}${group}${units}`;
+}
+function buildWeeklyMessage(s,lessons){
+  const sorted=[...lessons].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  return `Ciao ${s.name.split(' ')[0]}, ti confermo le lezioni di matematica della settimana:\n\n${sorted.map(weeklyLessonLine).join('\n')}\n\nA presto!`;
+}
+function sendWeeklyWhatsApp(sid,weekKey,target='student'){
+  const s=studentById(sid);if(!s)return;const lessons=weeklyBookingGroupsForStudent(sid)[weekKey]||[];if(lessons.length<2){toast('Servono almeno 2 appuntamenti nella stessa settimana');return}
+  const phone=target==='parent'?(s.parentPhone||s.phone):s.phone;if(!phone){toast('Numero non inserito');return}window.location.href=waUrl(phone,buildWeeklyMessage(s,lessons));
+}
+function openPostBookingSingles(sid){
+  const s=studentById(sid);if(!s)return;const lessons=postBookingLessonsForStudent(sid);
+  replaceModal(`<h2>Messaggi singoli</h2><p class="sub">${esc(s.name)} · ${lessons.length} ${lessons.length===1?'appuntamento':'appuntamenti'} appena prenotati.</p>${lessons.map(l=>`<div class="card"><b>${fmtDate(l.date)} · ${lessonTimeRange(l)}</b><p style="color:var(--muted);font-size:12px">${esc(buildMessage(l,s))}</p><div class="sendgrid"><button class="smallbtn wa" onclick="sendWhatsApp('${l.id}','${sid}','student')">WhatsApp alunno</button>${s.parentPhone?`<button class="smallbtn wa" onclick="sendWhatsApp('${l.id}','${sid}','parent')">WhatsApp genitore</button>`:'<button class="smallbtn" disabled>Nessun genitore</button>'}</div></div>`).join('')}<button class="cta secondary" onclick="openPostBookingMessages(true)">← Riepilogo invii</button>`);
+}
+function openPostBookingMessages(replace=false){
+  const studentIds=[...new Set(postBookingEntries.flatMap(e=>e.studentIds||[]))].filter(id=>studentById(id));
+  if(!studentIds.length){closeModal();return}
+  const cards=studentIds.map(sid=>{const s=studentById(sid),lessons=postBookingLessonsForStudent(sid),groups=weeklyBookingGroupsForStudent(sid),weekly=Object.entries(groups).filter(([,ls])=>ls.length>=2);
+    return `<div class="card"><div class="summary-head"><div><h3 style="margin:0 0 4px">${esc(s.name)}</h3><p style="margin:0;color:var(--muted);font-size:12px">${lessons.length} ${lessons.length===1?'appuntamento':'appuntamenti'} appena prenotati</p></div></div>${weekly.map(([wk,ls])=>`<div class="note price-note" style="margin-top:10px"><b>📅 Settimana ${fmtWeekRange(wk)}</b><br>${ls.map(l=>`${fmtDate(l.date)} · ${l.time}`).join(' · ')}<div class="sendgrid"><button class="smallbtn wa" onclick="sendWeeklyWhatsApp('${sid}','${wk}','student')">Unico WhatsApp</button>${s.parentPhone?`<button class="smallbtn wa" onclick="sendWeeklyWhatsApp('${sid}','${wk}','parent')">Al genitore</button>`:''}</div></div>`).join('')}<button class="cta secondary compact-cta" onclick="openPostBookingSingles('${sid}')">Messaggi singoli (${lessons.length})</button></div>`}).join('');
+  const html=`<h2>Conferme WhatsApp</h2><p class="sub">Puoi inviare ogni appuntamento singolarmente oppure, quando lo stesso alunno ha più lezioni nella stessa settimana, usare un unico riepilogo settimanale.</p>${cards}<button class="cta secondary" onclick="closeModal()">Chiudi</button>`;
+  if(replace)replaceModal(html);else showModal(html);
+}
 function waUrl(phone,msg){const p=normalizePhone(phone);return `https://wa.me/${p.replace('+','')}?text=${encodeURIComponent(msg)}`}
 function sendWhatsApp(lid,sid,target='student'){const l=data.lessons.find(x=>x.id===lid),s=studentById(sid);if(!l||!s)return;const phone=target==='parent'?(s.parentPhone||s.phone):s.phone;if(!phone){toast('Numero non inserito');return}window.location.href=waUrl(phone,buildMessage(l,s))}
 function openSendForLesson(id){
@@ -1135,9 +1190,9 @@ function exportMonthCSV(mk){
 }
 function openSettings(){
   const hist=loadHistory(),lastBackup=data.meta?.lastBackupAt;
-  showModal(`<h2>Impostazioni</h2><p class="sub">Link DAD e sicurezza dei dati.</p><div class="note"><b>🕘 Orari lezioni fissi</b><br>09:00–13:00 · 16:00–20:00<br><small>Le disponibilità vengono calcolate solo dentro queste fasce.</small></div><div class="field"><label>Link fisso DAD</label><input class="input" id="setDad" value="${esc(data.settings.dadLink||'')}" placeholder="https://..."></div><button class="cta" onclick="saveSettings()">Salva impostazioni</button><div class="section-title"><h2>Sicurezza dati</h2></div><div class="note"><b>Ultimo backup esterno:</b> ${lastBackup?fmtDateTime(lastBackup):'mai'}.<br>I salvataggi automatici sul telefono aiutano contro errori, ma non proteggono da perdita/guasto del telefono.</div><div class="sendgrid"><button class="smallbtn" onclick="exportBackup()">⬇ Esporta backup</button><button class="smallbtn" onclick="shareBackup()">↗ Condividi backup</button></div><div class="sendgrid"><button class="smallbtn" onclick="document.getElementById('importFile').click()">⬆ Importa backup</button><button class="smallbtn" onclick="openSafetyHistory()">↶ Cronologia (${hist.length})</button></div>`);
+  showModal(`<h2>Impostazioni</h2><p class="sub">Orari e sicurezza dei dati.</p><div class="note"><b>🕘 Orari lezioni fissi</b><br>09:00–13:00 · 16:00–20:00<br><small>Le disponibilità vengono calcolate solo dentro queste fasce.</small></div><div class="note"><b>💻 Lezioni DAD</b><br>Il link della videochiamata non viene salvato nel gestionale: puoi crearlo e inviarlo al momento per ogni singola lezione.</div><div class="section-title"><h2>Sicurezza dati</h2></div><div class="note"><b>Ultimo backup esterno:</b> ${lastBackup?fmtDateTime(lastBackup):'mai'}.<br>I salvataggi automatici sul telefono aiutano contro errori, ma non proteggono da perdita/guasto del telefono.</div><div class="sendgrid"><button class="smallbtn" onclick="exportBackup()">⬇ Esporta backup</button><button class="smallbtn" onclick="shareBackup()">↗ Condividi backup</button></div><div class="sendgrid"><button class="smallbtn" onclick="document.getElementById('importFile').click()">⬆ Importa backup</button><button class="smallbtn" onclick="openSafetyHistory()">↶ Cronologia (${hist.length})</button></div>`);
 }
-function saveSettings(){data.settings.start='09:00';data.settings.end='20:00';data.settings.step=30;data.settings.dadLink=document.getElementById('setDad').value.trim();save('Impostazioni');closeModal();toast('Impostazioni salvate')}
+function saveSettings(){data.settings.start='09:00';data.settings.end='20:00';data.settings.step=30;delete data.settings.dadLink;save('Impostazioni');closeModal();toast('Impostazioni salvate')}
 function backupPayload(){return JSON.stringify(data,null,2)}
 function markBackupDone(){data.meta=data.meta||{};data.meta.lastBackupAt=new Date().toISOString();persistNow();renderHome()}
 function downloadBlob(content,name,type){const blob=content instanceof Blob?content:new Blob([content],{type}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}

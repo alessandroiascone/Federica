@@ -23,3 +23,9 @@ Le icone 3D ora sono collegate alla UI e l’icona PWA principale usa file versi
 Dopo il deploy: aggiorna la pagina. Per forzare l’icona sul launcher Honor, disinstalla la vecchia PWA e reinstallala dal link GitHub Pages.
 
 V7.6.4: Modifica lezione completa. È possibile cambiare Individuale/Collettiva, aggiungere o rimuovere alunni e la tariffa si ricalcola automaticamente.
+
+
+V7.7.2
+- Riepilogo WhatsApp settimanale cumulativo per gli appuntamenti appena prenotati dello stesso alunno.
+- Restano disponibili i messaggi singoli per ogni appuntamento.
+- Rimosso il link DAD/Meet fisso: il link si crea e si invia al momento.
