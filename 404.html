@@ -55,13 +55,21 @@ button.mini-stat:active{transform:scale(.98)}
 .week-row.has-lessons .week-count{background:#ececff;color:#5052d5}
 .week-actions{display:flex;align-items:center;gap:8px}
 .availability-dot{width:18px;height:18px;min-width:18px;border:2px solid #fff;border-radius:999px;padding:0;box-shadow:0 2px 8px rgba(15,23,42,.14)}
-.availability-dot.available{background:#20b875;box-shadow:0 0 0 4px rgba(32,184,117,.12)}
+.availability-dot.good{background:#20b875;box-shadow:0 0 0 4px rgba(32,184,117,.12)}
+.availability-dot.limited{background:#f2b63d;box-shadow:0 0 0 4px rgba(242,182,61,.13)}
+.availability-dot.onehour{background:#3b82f6;box-shadow:0 0 0 4px rgba(59,130,246,.12)}
 .availability-dot.full{background:#e95260;box-shadow:0 0 0 4px rgba(233,82,96,.10)}
+.section-actions{display:flex;align-items:center;gap:2px}.planner-link{color:#168d67}
+.availability-legend-mini,.planner-legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:9px;font-weight:800}
+.availability-legend-mini{margin:-2px 4px 8px}.planner-legend{background:#fff;border:1px solid var(--line);border-radius:15px;padding:10px 12px;margin-bottom:10px}
+.availability-legend-mini span,.planner-legend span{display:flex;align-items:center;gap:4px}.availability-legend-mini i,.planner-legend i{width:9px;height:9px;border-radius:999px;display:inline-block}.good{--planner:#20b875}.limited{--planner:#f2b63d}.onehour{--planner:#3b82f6}.full{--planner:#e95260}.availability-legend-mini i,.planner-legend i{background:var(--planner)}
+.planner-list{display:flex;flex-direction:column;gap:8px}.planner-day{width:100%;border:1px solid var(--line);background:#fff;border-radius:18px;padding:10px 12px;display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;text-align:left;color:var(--ink)}.planner-day.good{border-left:5px solid #20b875}.planner-day.limited{border-left:5px solid #f2b63d}.planner-day.onehour{border-left:5px solid #3b82f6}.planner-day.full{border-left:5px solid #e95260}.planner-date{min-height:42px;border-radius:13px;background:#f5f6fa;display:flex;flex-direction:column;align-items:center;justify-content:center}.planner-date b{font-size:14px}.planner-date small{font-size:9px;color:var(--muted);font-weight:850}.planner-info{min-width:0}.planner-info b{display:block;font-size:12px}.planner-info small{display:block;font-size:9px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.planner-blocks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 12px}.planner-block{border-radius:15px;background:#f4fcf8;border:1px solid #c9efdd;padding:10px 11px}.planner-block b,.planner-block small{display:block}.planner-block b{font-size:12px}.planner-block small{font-size:9px;color:var(--muted);margin-top:3px}
 .availability-pills{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:8px 0 14px}
 .availability-slot{border:1px solid var(--line);background:#fff;border-radius:17px;padding:12px 10px;text-align:left;color:var(--ink);min-height:62px}
 .availability-slot b,.availability-slot small{display:block}.availability-slot small{font-size:10px;color:var(--muted);margin-top:4px}
 .availability-slot.free{border-color:#c9efdd;background:#f4fcf8}.availability-slot.collective{border-color:#ded9ff;background:#f7f5ff}
-.availability-banner{display:flex;align-items:center;gap:10px;border-radius:17px;padding:12px 13px;margin:10px 0 4px}.availability-banner.ok{background:#eaf9f2;color:#137653}.availability-banner.full{background:#fff0f2;color:#b93c4d}.availability-banner .availability-status-dot{width:14px;height:14px;border-radius:999px;background:currentColor;flex:0 0 auto}.availability-banner small{display:block;color:inherit;opacity:.75;margin-top:3px;font-size:10px}
+.availability-banner{display:flex;align-items:center;gap:10px;border-radius:17px;padding:12px 13px;margin:10px 0 4px}.availability-banner.ok{background:#eaf9f2;color:#137653}.availability-banner.limited{background:#fff7df;color:#98690c}.availability-banner.onehour{background:#eaf3ff;color:#2868bb}.availability-banner.full{background:#fff0f2;color:#b93c4d}.availability-banner .availability-status-dot{width:14px;height:14px;border-radius:999px;background:currentColor;flex:0 0 auto}.availability-banner small{display:block;color:inherit;opacity:.75;margin-top:3px;font-size:10px}
 .compact-empty{background:#fff;border-radius:18px;box-shadow:0 8px 24px rgba(24,34,58,.05);padding:13px 14px;color:var(--muted);font-size:12px;display:flex;align-items:center;gap:10px}
 .compact-empty strong{color:var(--ink)}
 
@@ -74,7 +82,7 @@ button.mini-stat:active{transform:scale(.98)}
 .timebox{border-radius:17px;background:#f0f1ff;color:#4d50c9;font-weight:800;text-align:center;padding:12px 6px;font-size:15px}
 .lesson h3{margin:0 0 4px;font-size:15px}.lesson p{margin:0;color:var(--muted);font-size:12px;line-height:1.4}
 .pill{border-radius:999px;padding:7px 9px;font-size:10px;font-weight:800;white-space:nowrap}
-.dad{background:#eaf2ff;color:#3471d7}.presence{background:#e9f8f1;color:#14825a}.group{background:#fff3da;color:#a46b00}
+.dad{background:#eaf2ff;color:#3471d7}.presence{background:#e9f8f1;color:#14825a}.mixed{background:#f1eaff;color:#6a45c8}.group{background:#fff3da;color:#a46b00}
 .empty{text-align:center;color:var(--muted);padding:26px 12px}
 .empty .big{font-size:34px;display:block;margin-bottom:8px}
 
@@ -206,6 +214,9 @@ button.mini-stat:active{transform:scale(.98)}
 .cta[disabled]{opacity:.45;pointer-events:none}
 
 .time-pills{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:12px 0}.time-pill{border:1px solid var(--line);background:#fff;border-radius:999px;min-height:48px;padding:10px 8px;color:var(--ink);font-weight:900;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:0 5px 14px rgba(24,34,58,.04)}.time-pill.selected{background:linear-gradient(135deg,var(--primary),var(--primary2));border-color:transparent;color:#fff;box-shadow:0 8px 20px rgba(91,92,240,.24)}.time-pill.join:not(.selected){background:#fff7df;border-color:#f1d17a;color:#8b6500}.time-pill span{font-size:12px}.time-legend{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 14px}.time-legend span{background:#f4f6fa;border-radius:999px;padding:7px 9px;color:var(--muted);font-size:10px;font-weight:750}.mode-time-row{border:1px solid var(--line);border-radius:18px;padding:12px;margin:9px 0;background:#fff}.mode-time-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:9px}.mode-time-head b{font-size:15px}.mode-time-head small{font-size:9px;color:#9a7108;background:#fff3d2;border-radius:999px;padding:5px 7px}.mode-pills{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mode-pill,.rec-pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:11px 9px;min-height:44px;font-weight:850;color:var(--ink)}.mode-pill.selected,.rec-pill.selected{border-color:var(--primary);background:#efefff;color:#4f50d8}.mode-pill.disabled{opacity:.35}.recurrence-pills{display:grid;grid-template-columns:1fr 1fr;gap:8px}@media(max-width:360px){.time-pills{grid-template-columns:repeat(2,1fr)}}
+
+.mode-student-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.mode-student-row:first-child{border-top:0}.mode-student-row>span{min-width:0;flex:1}.mode-student-row>span b{display:block;font-size:13px}.mode-student-row>span small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
 </style>
 </head>
 <body>
@@ -228,7 +239,7 @@ button.mini-stat:active{transform:scale(.98)}
     <div class="section-title"><h2>Agenda di oggi</h2><button class="textbtn" onclick="go('agenda')">Vedi tutte</button></div>
     <div id="todayLessons"></div>
 
-    <div class="section-title"><h2>Prossimi 14 giorni</h2><button class="textbtn" onclick="openSummary()">Riepilogo</button></div>
+    <div class="section-title"><h2>Prossimi 14 giorni</h2><div class="section-actions"><button class="textbtn planner-link" onclick="openAvailabilityPlanner()">Planner</button><button class="textbtn" onclick="openSummary()">Riepilogo</button></div></div><div class="availability-legend-mini"><span><i class="good"></i>Buona</span><span><i class="limited"></i>Poca</span><span><i class="onehour"></i>Solo 1h</span><span><i class="full"></i>Piena</span></div>
     <div id="homeWeekList" class="week-panel"></div>
   </section>
 
@@ -330,7 +341,7 @@ function loadDataSafely(){
 let data=loadDataSafely();
 let agendaMode='today';
 let selectedPayMonth=monthKey(new Date());
-let wizard={step:0,studentIds:[],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},plannerStage:'day',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null,quickDuplicate:false,duplicateSourceId:null};
+let wizard={step:0,studentIds:[],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},timeStudentModes:{},plannerStage:'day',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null,quickDuplicate:false,duplicateSourceId:null};
 let postBookingEntries=[];
 let currentPage='home';
 let pageStack=[];
@@ -342,7 +353,7 @@ function migrateData(){
   data.payments=data.payments&&typeof data.payments==='object'?data.payments:{};
   data.monthClosures=data.monthClosures&&typeof data.monthClosures==='object'?data.monthClosures:{};
   data.settings=Object.assign({start:'09:00',end:'20:00',step:30},data.settings||{});data.settings.start='09:00';data.settings.end='20:00';data.settings.step=30;delete data.settings.dadLink;
-  data.meta=Object.assign({schema:10,lastBackupAt:null},data.meta||{});data.meta.schema=10;
+  data.meta=Object.assign({schema:11,lastBackupAt:null},data.meta||{});data.meta.schema=11;
   data.students.forEach(s=>{
     if(typeof s.active==='undefined')s.active=true;
     if(!s.billingType)s.billingType='lesson';
@@ -387,6 +398,11 @@ function migrateData(){
     if(!Number.isFinite(Number(l.duration))||Number(l.duration)<=0)l.duration=(Number(l.baseDuration)||60)*l.lessonUnits;
     if(!['individual','collective'].includes(l.lessonType))l.lessonType=(l.rateType==='collective'||(l.studentIds||[]).length>1)?'collective':'individual';
     l.monthlyAmountsByStudent=l.monthlyAmountsByStudent&&typeof l.monthlyAmountsByStudent==='object'?l.monthlyAmountsByStudent:{};
+    l.studentModes=l.studentModes&&typeof l.studentModes==='object'?l.studentModes:{};
+    const legacyMode=l.mode==='dad'?'dad':'presence';
+    (l.studentIds||[]).forEach(sid=>{if(!['dad','presence'].includes(l.studentModes[sid]))l.studentModes[sid]=legacyMode});
+    Object.keys(l.studentModes).forEach(sid=>{if(!(l.studentIds||[]).includes(sid))delete l.studentModes[sid]});
+    syncLessonMode(l);
     const billableIds=(l.studentIds||[]).filter(id=>!l.monthlyStudentIds.includes(id));
     if(billableIds.length===0 && l.monthlyStudentIds.length){
       l.rateType='monthly';
@@ -401,7 +417,7 @@ function migrateData(){
       l.pricingMissing=billableIds.length>0 && !l.pricePerStudent;
     }
   });
-  data.meta.schema=Math.max(Number(data.meta.schema)||4,10);
+  data.meta.schema=Math.max(Number(data.meta.schema)||4,11);
   if(!data.meta.pricingV5Migrated){
     data.meta.pricingV5Migrated=true;
     data.meta.pricingV5MigratedAt=new Date().toISOString();
@@ -450,6 +466,28 @@ function fmtDateTime(iso){if(!iso)return 'Mai';let d=new Date(iso);return `${pad
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function studentById(id){return data.students.find(s=>s.id===id)}
 function lessonStudentNames(l){return l.studentIds.map(id=>studentById(id)?.name).filter(Boolean).join(', ')}
+function lessonModeForStudent(l,sid){
+  const m=l?.studentModes?.[sid];
+  if(m==='dad'||m==='presence')return m;
+  return l?.mode==='dad'?'dad':'presence';
+}
+function syncLessonMode(l){
+  if(!l)return l;
+  l.studentModes=l.studentModes&&typeof l.studentModes==='object'?l.studentModes:{};
+  const legacy=l.mode==='dad'?'dad':'presence';
+  (l.studentIds||[]).forEach(sid=>{if(!['dad','presence'].includes(l.studentModes[sid]))l.studentModes[sid]=legacy});
+  Object.keys(l.studentModes).forEach(sid=>{if(!(l.studentIds||[]).includes(sid))delete l.studentModes[sid]});
+  const modes=[...new Set((l.studentIds||[]).map(sid=>l.studentModes[sid]).filter(m=>m==='dad'||m==='presence'))];
+  l.mode=modes.length>1?'mixed':(modes[0]||legacy);
+  return l;
+}
+function lessonModeLabel(l){syncLessonMode(l);return l.mode==='mixed'?'Mista DAD/Presenza':l.mode==='dad'?'DAD':'Presenza'}
+function lessonModeClass(l){syncLessonMode(l);return l.mode==='mixed'?'mixed':l.mode==='dad'?'dad':'presence'}
+function lessonModeIconLabel(l){syncLessonMode(l);return l.mode==='mixed'?'🔀 Mista · DAD + Presenza':l.mode==='dad'?'💻 DAD':'🏠 Presenza'}
+function lessonModeCounts(l){let dad=0,presence=0;(l?.studentIds||[]).forEach(sid=>{lessonModeForStudent(l,sid)==='dad'?dad++:presence++});return {dad,presence}}
+function lessonModeSummary(l){const c=lessonModeCounts(l);return c.dad&&c.presence?`💻 ${c.dad} DAD · 🏠 ${c.presence} presenza`:c.dad?`💻 DAD${c.dad>1?' · '+c.dad+' alunni':''}`:`🏠 Presenza${c.presence>1?' · '+c.presence+' alunni':''}`}
+function modeLabelForStudent(l,sid){return lessonModeForStudent(l,sid)==='dad'?'DAD':'Presenza'}
+
 function normalizePhone(p){return (p||'').replace(/[^\d+]/g,'').replace(/^00/,'+')}
 function toast(msg){let t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1900)}
 function lessonStartDate(l){return new Date(`${l.date}T${l.time}:00`)}
@@ -625,12 +663,12 @@ function dayAvailabilityInfo(dk){
 function openDayAvailability(dk){
   const info=dayAvailabilityInfo(dk);
   const freeHtml=info.freeStarts.length?`<div class="section-title"><h2>Orari liberi</h2><span style="color:var(--muted);font-size:12px">almeno 1 ora</span></div><div class="availability-pills">${info.freeStarts.map(t=>`<button class="availability-slot free" onclick="startLessonFromAvailability('${dk}','${t}','free')"><b>${t}–${endTimeFromStart(t,60)}</b><small>Libero · aggiungi lezione</small></button>`).join('')}</div>`:'';
-  const collHtml=info.collectiveSlots.length?`<div class="section-title"><h2>Collettive con posto</h2><span style="color:var(--muted);font-size:12px">max ${MAX_COLLECTIVE_STUDENTS}</span></div><div class="availability-pills">${info.collectiveSlots.map(x=>`<button class="availability-slot collective" onclick="startLessonFromAvailability('${dk}','${x.lesson.time}','collective','${x.lesson.id}')"><b>${x.lesson.time} · ${x.lesson.studentIds.length}/${MAX_COLLECTIVE_STUDENTS}</b><small>${x.freePlaces} ${x.freePlaces===1?'posto libero':'posti liberi'} · ${x.lesson.mode==='dad'?'DAD':'Presenza'}</small></button>`).join('')}</div>`:'';
+  const collHtml=info.collectiveSlots.length?`<div class="section-title"><h2>Collettive con posto</h2><span style="color:var(--muted);font-size:12px">max ${MAX_COLLECTIVE_STUDENTS}</span></div><div class="availability-pills">${info.collectiveSlots.map(x=>`<button class="availability-slot collective" onclick="startLessonFromAvailability('${dk}','${x.lesson.time}','collective','${x.lesson.id}')"><b>${x.lesson.time} · ${x.lesson.studentIds.length}/${MAX_COLLECTIVE_STUDENTS}</b><small>${x.freePlaces} ${x.freePlaces===1?'posto libero':'posti liberi'} · ${lessonModeLabel(x.lesson)}</small></button>`).join('')}</div>`:'';
   showModal(`<h2>Disponibilità</h2><p class="sub">${fmtDate(dk)} · orari di lavoro 09:00–13:00 e 16:00–20:00.</p>${info.available?`<div class="availability-banner ok"><span class="availability-status-dot"></span><b>Ci sono disponibilità</b></div>${freeHtml}${collHtml}`:`<div class="availability-banner full"><span class="availability-status-dot"></span><div><b>Disponibilità terminate</b><small>Nessun blocco libero di almeno 1 ora e nessuna collettiva con posti disponibili.</small></div></div>`}<button class="cta secondary" onclick="modalBack()">Indietro</button>`);
 }
 function startLessonFromAvailability(dk,t,kind,targetId=''){
   closeModal();
-  wizard={step:0,introStep:'students',studentIds:[],appointments:[],date:dk,time:'',selectedTimes:[],timeModes:{},plannerStage:'day',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null,quickDuplicate:false,duplicateSourceId:null,availabilityPreset:{date:dk,time:t,kind,targetId}};
+  wizard={step:0,introStep:'students',studentIds:[],appointments:[],date:dk,time:'',selectedTimes:[],timeModes:{},timeStudentModes:{},plannerStage:'day',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null,quickDuplicate:false,duplicateSourceId:null,availabilityPreset:{date:dk,time:t,kind,targetId}};
   modalStack=[];renderWizard();
 }
 function renderHome(){
@@ -671,14 +709,14 @@ function renderHome(){
   weekBox.innerHTML=weekDays.map((x,i)=>{
     const first=x.lessons[0],names=first?lessonStudentNames(first):'';
     const detail=first?`${first.time} · ${names}${x.lessons.length>1?` · +${x.lessons.length-1} altra/e`:''}`:'Nessuna lezione';
-    const mode=first?`${first.mode==='dad'?'DAD':'Presenza'}${lessonIsCollective(first)?' · collettiva':''}`:'Nessuna lezione programmata';
+    const mode=first?`${lessonModeLabel(first)}${lessonIsCollective(first)?' · collettiva':''}`:'Nessuna lezione programmata';
     const dayUnits=x.lessons.reduce((a,l)=>a+lessonUnitCount(l),0),availability=dayAvailabilityInfo(x.dk);
     return `<div class="week-row ${i===0?'today-row':''} ${x.lessons.length?'has-lessons':''}" onclick="renderSummaryModal('${x.dk}')"><span class="week-date"><b>${x.d.getDate()}</b><small>${days[x.d.getDay()].slice(0,3)}</small></span><span class="week-info"><b>${esc(detail)}</b><small>${esc(mode)}</small></span><span class="week-actions"><span class="week-count">${dayUnits||'–'}</span><button class="availability-dot ${availability.available?'available':'full'}" onclick="event.stopPropagation();openDayAvailability('${x.dk}')" aria-label="${availability.available?'Disponibilità presenti':'Disponibilità terminate'}" title="${availability.available?'Disponibilità presenti':'Disponibilità terminate'}"></button></span></div>`;
   }).join('');
 }
 function lessonCard(l){
   const names=lessonStudentNames(l),group=lessonIsCollective(l)?`<span class="pill group">${l.studentIds.length} ${l.studentIds.length===1?'alunno':'alunni'}</span>`:'',status=lessonStatusText(l),price=lessonPricingShort(l);
-  return `<div class="card lesson" onclick="openLesson('${l.id}')"><div class="timebox">${l.time}</div><div><h3>${esc(names||'Alunno archiviato')}</h3><p>${lessonTimeRange(l)} · ${lessonUnitsLabel(l)}<br>${lessonIsCollective(l)?'Lezione collettiva':'Lezione individuale'} · <b>${status}</b><br>${price}</p></div><div>${group}<span class="pill ${l.mode==='dad'?'dad':'presence'}">${l.mode==='dad'?'DAD':'Presenza'}</span></div></div>`;
+  return `<div class="card lesson" onclick="openLesson('${l.id}')"><div class="timebox">${l.time}</div><div><h3>${esc(names||'Alunno archiviato')}</h3><p>${lessonTimeRange(l)} · ${lessonUnitsLabel(l)}<br>${lessonIsCollective(l)?'Lezione collettiva':'Lezione individuale'} · <b>${status}</b><br>${price}</p></div><div>${group}<span class="pill ${lessonModeClass(l)}">${lessonModeLabel(l)}</span></div></div>`;
 }
 function openStudentForm(id,resume=false){
   const st=id?studentById(id):{name:'',phone:'',parentPhone:'',billingType:'lesson',preferredRate:'',monthlyAmount:'',monthlyMode:'presence',monthlyDuration:60};
@@ -722,13 +760,13 @@ function openArchivedStudents(){
 function openStudent(id){
   const st=studentById(id);if(!st)return;
   const ls=data.lessons.filter(l=>l.studentIds.includes(id)&&l.status==='completed').sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
-  const dad=ls.filter(l=>l.mode==='dad').reduce((a,l)=>a+l.duration/60,0),pr=ls.filter(l=>l.mode==='presence').reduce((a,l)=>a+l.duration/60,0);
+  const dad=ls.filter(l=>lessonModeForStudent(l,id)==='dad').reduce((a,l)=>a+l.duration/60,0),pr=ls.filter(l=>lessonModeForStudent(l,id)==='presence').reduce((a,l)=>a+l.duration/60,0);
   const missing=ls.filter(l=>!studentIsMonthlyInLesson(l,id)&&!hasValidPricing(l)).length;
   const perLessonRevenue=ls.reduce((a,l)=>a+lessonChargeForStudent(l,id),0),monthly=studentBillingType(st)==='monthly',lessonCount=ls.reduce((a,l)=>a+lessonUnitCount(l),0);
-  showModal(`<h2>${esc(st.name)}</h2><p class="sub">${esc(st.phone||'Telefono non inserito')}${st.parentPhone?` · Genitore ${esc(st.parentPhone)}`:''}</p><div class="note price-note"><b>Piano:</b> ${monthly?`Mensile · ${fmtEuro(monthlyAmountForStudent(st))}/mese · modalità e durata modificabili ogni volta · predefinita ${durationLabel(Number(st.monthlyDuration)||60)}`:`Pagamento a lezione${st.preferredRate?` · preferita ${PREFERRED_RATE_LABELS[st.preferredRate]}`:''}`}</div>${missing?`<div class="note warning-note"><b>${missing} lezioni senza tariffa:</b> apri le lezioni storiche e assegna il prezzo per completare la contabilità.</div>`:''}<div class="statrow"><div class="stat"><b>${lessonCount}</b><small>Lezioni svolte</small></div><div class="stat"><b>${fmtHours(dad+pr)}</b><small>Ore totali</small></div><div class="stat"><b>${monthly?'Mensile':fmtEuro(perLessonRevenue)}</b><small>${monthly?'Piano attivo':'Totale lezioni'}</small></div></div><div class="section-title"><h2>Storico contabile</h2><button class="textbtn" onclick="openStudentForm('${id}')">Modifica</button></div>${ls.length?ls.map(l=>`<div class="card lesson" onclick="openLesson('${l.id}')"><div class="timebox">${l.time}</div><div><h3>${fmtDate(l.date)}</h3><p>${lessonBlockLabel(l)} · ${lessonTypeLabel(l)}<br>${studentIsMonthlyInLesson(l,id)?'Mensile':hasValidPricing(l)?`${rateLabel(l.rateType)} · ${fmtEuro(lessonPriceForStudent(l,id))}${lessonUnitCount(l)>1?` × ${lessonUnitCount(l)} = ${fmtEuro(lessonChargeForStudent(l,id))}`:''}`:'⚠ Tariffa mancante'}</p></div><span class="pill ${l.mode==='dad'?'dad':'presence'}">${l.mode==='dad'?'DAD':'Presenza'}</span></div>`).join(''):`<div class="empty">Nessuna lezione svolta registrata.</div>`}`);
+  showModal(`<h2>${esc(st.name)}</h2><p class="sub">${esc(st.phone||'Telefono non inserito')}${st.parentPhone?` · Genitore ${esc(st.parentPhone)}`:''}</p><div class="note price-note"><b>Piano:</b> ${monthly?`Mensile · ${fmtEuro(monthlyAmountForStudent(st))}/mese · modalità e durata modificabili ogni volta · predefinita ${durationLabel(Number(st.monthlyDuration)||60)}`:`Pagamento a lezione${st.preferredRate?` · preferita ${PREFERRED_RATE_LABELS[st.preferredRate]}`:''}`}</div>${missing?`<div class="note warning-note"><b>${missing} lezioni senza tariffa:</b> apri le lezioni storiche e assegna il prezzo per completare la contabilità.</div>`:''}<div class="statrow"><div class="stat"><b>${lessonCount}</b><small>Lezioni svolte</small></div><div class="stat"><b>${fmtHours(dad+pr)}</b><small>Ore totali</small></div><div class="stat"><b>${monthly?'Mensile':fmtEuro(perLessonRevenue)}</b><small>${monthly?'Piano attivo':'Totale lezioni'}</small></div></div><div class="section-title"><h2>Storico contabile</h2><button class="textbtn" onclick="openStudentForm('${id}')">Modifica</button></div>${ls.length?ls.map(l=>`<div class="card lesson" onclick="openLesson('${l.id}')"><div class="timebox">${l.time}</div><div><h3>${fmtDate(l.date)}</h3><p>${lessonBlockLabel(l)} · ${lessonTypeLabel(l)}<br>${studentIsMonthlyInLesson(l,id)?'Mensile':hasValidPricing(l)?`${rateLabel(l.rateType)} · ${fmtEuro(lessonPriceForStudent(l,id))}${lessonUnitCount(l)>1?` × ${lessonUnitCount(l)} = ${fmtEuro(lessonChargeForStudent(l,id))}`:''}`:'⚠ Tariffa mancante'}</p></div><span class="pill ${lessonModeForStudent(l,id)==='dad'?'dad':'presence'}">${modeLabelForStudent(l,id)}</span></div>`).join(''):`<div class="empty">Nessuna lezione svolta registrata.</div>`}`);
 }
 function startLessonWizard(){
-  wizard={step:0,introStep:'students',studentIds:[],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},plannerStage:'day',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null,quickDuplicate:false,duplicateSourceId:null};
+  wizard={step:0,introStep:'students',studentIds:[],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},timeStudentModes:{},plannerStage:'day',baseDuration:60,lessonUnits:1,duration:60,mode:null,rateType:null,repeatWeeks:1,recoveryOf:null,lessonType:null,quickDuplicate:false,duplicateSourceId:null};
   modalStack=[];
   renderWizard();
 }
@@ -781,7 +819,7 @@ function timeFitsAvailability(t,duration){
 function allowedStartTimesForDuration(duration){return allowedLessonTimes().filter(t=>timeFitsAvailability(t,duration))}
 function appointmentOccurrences(ap){
   const n=Math.max(1,Number(ap.repeatWeeks)||1),seriesId=n>1?(ap.seriesId||(ap.seriesId=uid())):null;
-  return Array.from({length:n},(_,i)=>({appointmentId:ap.id,date:addDaysToKey(ap.date,i*7),time:ap.time,baseDuration:Number(ap.baseDuration)||60,lessonUnits:Math.max(1,Math.min(2,Number(ap.lessonUnits)||1)),duration:Number(ap.duration)||60,mode:ap.mode,repeatWeeks:n,seriesId}));
+  return Array.from({length:n},(_,i)=>({appointmentId:ap.id,date:addDaysToKey(ap.date,i*7),time:ap.time,baseDuration:Number(ap.baseDuration)||60,lessonUnits:Math.max(1,Math.min(2,Number(ap.lessonUnits)||1)),duration:Number(ap.duration)||60,mode:ap.mode,studentModes:structuredClone(ap.studentModes||{}),repeatWeeks:n,seriesId}));
 }
 function wizardQueuedOccurrences(){return (wizard.appointments||[]).flatMap(appointmentOccurrences)}
 function queuedOverlap(date,t,duration){return wizardQueuedOccurrences().filter(o=>o.date===date&&timeRangesOverlap(t,duration,o.time,o.duration))}
@@ -800,8 +838,8 @@ function collectiveSlotInfo(t){
       if(target.studentIds.some(id=>wizard.studentIds.includes(id)))return {time:t,state:'blocked',target:null,label:'alunno già presente'};
       const newIds=wizard.studentIds.filter(id=>!target.studentIds.includes(id));
       if(target.studentIds.length>=MAX_COLLECTIVE_STUDENTS||target.studentIds.length+newIds.length>MAX_COLLECTIVE_STUDENTS)return {time:t,state:'blocked',target:null,label:`collettiva piena · max ${MAX_COLLECTIVE_STUDENTS}`};
-      if(wizard.quickDuplicate&&(Number(target.duration)!==Number(wizard.duration)||target.mode!==wizard.mode))return {time:t,state:'blocked',target:null,label:'slot collettivo diverso'};
-      return {time:t,state:'join',target,label:`già aperta · ${target.studentIds.length}/${MAX_COLLECTIVE_STUDENTS} alunni · ${lessonUnitsLabel(target)} · ${target.mode==='dad'?'DAD':'Presenza'}`};
+      if(wizard.quickDuplicate&&Number(target.duration)!==Number(wizard.duration))return {time:t,state:'blocked',target:null,label:'slot collettivo con durata diversa'};
+      return {time:t,state:'join',target,label:`già aperta · ${target.studentIds.length}/${MAX_COLLECTIVE_STUDENTS} alunni · ${lessonUnitsLabel(target)} · ${lessonModeLabel(target)}`};
     }
   }
   const overlaps=dayLessons.filter(l=>timeRangesOverlap(t,wizard.duration,l.time,l.duration));
@@ -814,7 +852,7 @@ function wizardTimeOptions(){
   return allowedLessonTimes().map(t=>{const info=collectiveSlotInfo(t);if(info.state==='join')return timeFitsAvailability(t,info.target?.duration||wizard.duration)?info:{...info,state:'blocked'};if(info.state==='free'&&!timeFitsAvailability(t,wizard.duration))return {...info,state:'blocked'};if(info.state==='free')info.label=`libero · fino alle ${endTimeFromStart(t,wizard.duration)}`;return info}).filter(x=>x.state!=='blocked');
 }
 function setWizardDate(k){
-  wizard.date=k;wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};if(!wizard.quickDuplicate)wizard.mode=null;wizard.plannerStage='times';renderWizard();
+  wizard.date=k;wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.timeStudentModes={};if(!wizard.quickDuplicate)wizard.mode=null;wizard.plannerStage='times';renderWizard();
 }
 function selectedTimeDuration(t){
   if(wizard.lessonType==='collective'){
@@ -823,28 +861,25 @@ function selectedTimeDuration(t){
   return wizard.duration;
 }
 function toggleWizardTimePill(t){
-  wizard.selectedTimes=Array.isArray(wizard.selectedTimes)?wizard.selectedTimes:[];wizard.timeModes=wizard.timeModes||{};
+  wizard.selectedTimes=Array.isArray(wizard.selectedTimes)?wizard.selectedTimes:[];wizard.timeModes=wizard.timeModes||{};wizard.timeStudentModes=wizard.timeStudentModes||{};
   const i=wizard.selectedTimes.indexOf(t);
-  if(i>=0){wizard.selectedTimes.splice(i,1);delete wizard.timeModes[t];renderWizard();return}
+  if(i>=0){wizard.selectedTimes.splice(i,1);delete wizard.timeModes[t];delete wizard.timeStudentModes[t];renderWizard();return}
   const option=wizardTimeOptions().find(x=>x.time===t);if(!option){toast('Questo orario non è disponibile');return}
   const dur=selectedTimeDuration(t);
   for(const other of wizard.selectedTimes){if(timeRangesOverlap(t,dur,other,selectedTimeDuration(other))){toast('Gli orari scelti si sovrappongono');return}}
-  wizard.selectedTimes.push(t);
-  if(wizard.quickDuplicate)wizard.timeModes[t]=wizard.mode;
-  else if(wizard.lessonType==='collective'){const info=collectiveSlotInfo(t);if(info?.target)wizard.timeModes[t]=info.target.mode}
+  wizard.selectedTimes.push(t);wizard.timeStudentModes[t]={};
+  wizard.studentIds.forEach(sid=>{let mode=null;if(wizard.quickDuplicate)mode=wizard.duplicateStudentModes?.[sid]||wizard.mode;if(mode==='dad'||mode==='presence')wizard.timeStudentModes[t][sid]=mode});
   renderWizard();
 }
 function wizardTimesNext(){
   if(!(wizard.selectedTimes||[]).length){toast('Seleziona almeno un orario');return}
   wizard.plannerStage='modes';renderWizard();
 }
-function setWizardTimeMode(t,mode){
-  if(!['presence','dad'].includes(mode))return;wizard.timeModes=wizard.timeModes||{};
-  if(wizard.lessonType==='collective'){
-    const info=collectiveSlotInfo(t);if(info?.target&&info.target.mode!==mode){toast(`Questo slot è già ${info.target.mode==='dad'?'DAD':'in presenza'}`);return}
-  }
-  wizard.timeModes[t]=mode;renderWizard();
-}
+function setWizardTimeMode(t,mode){if(wizard.studentIds.length===1)return setWizardStudentMode(t,wizard.studentIds[0],mode)}
+function setWizardStudentMode(t,sid,mode){if(!['presence','dad'].includes(mode)||!wizard.studentIds.includes(sid))return;wizard.timeStudentModes=wizard.timeStudentModes||{};wizard.timeStudentModes[t]=wizard.timeStudentModes[t]||{};wizard.timeStudentModes[t][sid]=mode;renderWizard()}
+function wizardStudentModesForTime(t){const map=Object.assign({},wizard.timeStudentModes?.[t]||{});wizard.studentIds.forEach(sid=>{if(!['dad','presence'].includes(map[sid])&&wizard.quickDuplicate){const m=wizard.duplicateStudentModes?.[sid]||wizard.mode;if(m==='dad'||m==='presence')map[sid]=m}});return map}
+function aggregateStudentModes(map,ids){const modes=[...new Set((ids||[]).map(sid=>map?.[sid]).filter(m=>m==='dad'||m==='presence'))];return modes.length>1?'mixed':(modes[0]||'presence')}
+
 function selectWizardTime(t){wizard.time=t;toggleWizardTimePill(t)}
 function setWizardBaseDuration(v){if(wizard.quickDuplicate)return;wizard.baseDuration=[60,90].includes(Number(v))?Number(v):60;wizard.duration=lessonTotalMinutes(wizard.baseDuration,wizard.lessonUnits);wizard.time='';wizard.mode=null;renderWizard()}
 function setWizardUnits(v){if(wizard.quickDuplicate)return;wizard.lessonUnits=[1,2].includes(Number(v))?Number(v):1;wizard.duration=lessonTotalMinutes(wizard.baseDuration,wizard.lessonUnits);wizard.time='';wizard.mode=null;renderWizard()}
@@ -855,7 +890,7 @@ function individualRateChoicesHtml(selected){
 function appointmentListHtml(){
   const list=wizard.appointments||[];
   if(!list.length)return `<div class="note"><b>Nessun appuntamento aggiunto.</b><br>Scegli giorno, ora e modalità, poi premi “Aggiungi appuntamento”.</div>`;
-  return `<div class="section-title"><h2>Appuntamenti (${list.length})</h2><span style="color:var(--muted);font-size:11px">puoi aggiungerne altri</span></div>${list.map(ap=>`<div class="card" style="padding:12px"><div class="summary-head"><div><h3 style="margin:0 0 4px">${fmtDate(ap.date)} · ${ap.time}–${endTimeFromStart(ap.time,ap.duration)}</h3><p style="margin:0;color:var(--muted);font-size:12px">${ap.mode==='dad'?'💻 DAD':'🏠 Presenza'} · ${ap.lessonUnits} ${ap.lessonUnits===1?'lezione':'lezioni'} × ${durationLabel(ap.baseDuration)}${ap.repeatWeeks>1?` · ↻ ogni settimana × ${ap.repeatWeeks}`:''}</p></div><button class="smallbtn danger-mini" onclick="removeWizardAppointment('${ap.id}')">Elimina</button></div></div>`).join('')}`;
+  return `<div class="section-title"><h2>Appuntamenti (${list.length})</h2><span style="color:var(--muted);font-size:11px">puoi aggiungerne altri</span></div>${list.map(ap=>`<div class="card" style="padding:12px"><div class="summary-head"><div><h3 style="margin:0 0 4px">${fmtDate(ap.date)} · ${ap.time}–${endTimeFromStart(ap.time,ap.duration)}</h3><p style="margin:0;color:var(--muted);font-size:12px">${ap.mode==='mixed'?'🔀 Mista DAD/Presenza':ap.mode==='dad'?'💻 DAD':'🏠 Presenza'} · ${ap.lessonUnits} ${ap.lessonUnits===1?'lezione':'lezioni'} × ${durationLabel(ap.baseDuration)}${ap.repeatWeeks>1?` · ↻ ogni settimana × ${ap.repeatWeeks}`:''}</p></div><button class="smallbtn danger-mini" onclick="removeWizardAppointment('${ap.id}')">Elimina</button></div></div>`).join('')}`;
 }
 function plannerQuickDaysHtml(){
   const now=new Date(),opts=[];
@@ -868,11 +903,12 @@ function plannerTimePillsHtml(){
   return `<div class="time-pills">${options.map(x=>`<button class="time-pill ${selected.includes(x.time)?'selected':''} ${x.state==='join'?'join':''}" onclick="toggleWizardTimePill('${x.time}')"><b>${x.time}</b>${x.state==='join'?'<span>👥</span>':''}</button>`).join('')}</div><div class="time-legend"><span>✓ puoi selezionare uno o più orari</span>${wizard.lessonType==='collective'?'<span>👥 slot collettivo già aperto</span>':''}</div>`;
 }
 function plannerModesHtml(){
-  const selected=[...(wizard.selectedTimes||[])].sort(),rows=selected.map(t=>{
-    const info=wizard.lessonType==='collective'?collectiveSlotInfo(t):null,locked=wizard.quickDuplicate||!!info?.target,mode=wizard.quickDuplicate?wizard.mode:(wizard.timeModes?.[t]||info?.target?.mode||null),dur=info?.target?Number(info.target.duration)||wizard.duration:wizard.duration;
-    return `<div class="mode-time-row"><div class="mode-time-head"><b>${t}–${endTimeFromStart(t,dur)}</b>${info?.target?'<small>👥 collettiva già aperta</small>':''}</div><div class="mode-pills"><button class="mode-pill ${mode==='presence'?'selected':''} ${locked&&mode!=='presence'?'disabled':''}" ${locked&&mode!=='presence'?'disabled':''} onclick="setWizardTimeMode('${t}','presence')">🏠 Presenza</button><button class="mode-pill ${mode==='dad'?'selected':''} ${locked&&mode!=='dad'?'disabled':''}" ${locked&&mode!=='dad'?'disabled':''} onclick="setWizardTimeMode('${t}','dad')">💻 DAD</button></div></div>`;
+  const selected=[...(wizard.selectedTimes||[])].sort();
+  return selected.map(t=>{
+    const info=wizard.lessonType==='collective'?collectiveSlotInfo(t):null,dur=info?.target?Number(info.target.duration)||wizard.duration:wizard.duration;
+    const rows=wizard.studentIds.map(sid=>{const st=studentById(sid),map=wizardStudentModesForTime(t),mode=map[sid]||null;return `<div class="mode-student-row"><span><b>${esc(st?.name||'Alunno')}</b><small>${mode==='dad'?'DAD':mode==='presence'?'Presenza':'scegli modalità'}</small></span><div class="mode-pills"><button class="mode-pill ${mode==='presence'?'selected':''}" onclick="setWizardStudentMode('${t}','${sid}','presence')">🏠 Presenza</button><button class="mode-pill ${mode==='dad'?'selected':''}" onclick="setWizardStudentMode('${t}','${sid}','dad')">💻 DAD</button></div></div>`}).join('');
+    return `<div class="mode-time-row"><div class="mode-time-head"><b>${t}–${endTimeFromStart(t,dur)}</b>${info?.target?`<small>👥 collettiva già aperta · ${lessonModeLabel(info.target)}</small>`:''}</div>${rows}</div>`;
   }).join('');
-  return rows;
 }
 function renderWizardPlanner(){
   wizard.plannerStage=wizard.plannerStage||'day';
@@ -882,8 +918,8 @@ function renderWizardPlanner(){
     return `${wizardDots()}<h2>Scegli orario/i</h2><p class="sub"><b>${fmtDate(wizard.date)}</b> · tocca una o più pillole. Gli orari incompatibili non vengono mostrati.</p>${plannerTimePillsHtml()}<button class="cta" onclick="wizardTimesNext()">Continua con ${(wizard.selectedTimes||[]).length} ${(wizard.selectedTimes||[]).length===1?'orario':'orari'}</button>`;
   }
   if(wizard.plannerStage==='modes'){
-    const selected=wizard.selectedTimes||[],modesOk=wizard.quickDuplicate||selected.every(t=>!!wizard.timeModes?.[t]||(wizard.lessonType==='collective'&&!!collectiveSlotInfo(t)?.target));
-    return `${wizardDots()}<h2>DAD o presenza</h2><p class="sub">Imposta la modalità per ogni orario scelto. Puoi mescolare DAD e presenza nello stesso giorno.</p>${plannerModesHtml()}<div class="field"><label>Ricorrenza</label><div class="recurrence-pills"><button class="rec-pill ${wizard.repeatWeeks===1?'selected':''}" onclick="wizard.repeatWeeks=1;renderWizard()">Una volta</button><button class="rec-pill ${wizard.repeatWeeks===4?'selected':''}" onclick="wizard.repeatWeeks=4;renderWizard()">×4 settimane</button><button class="rec-pill ${wizard.repeatWeeks===8?'selected':''}" onclick="wizard.repeatWeeks=8;renderWizard()">×8 settimane</button><button class="rec-pill ${wizard.repeatWeeks===12?'selected':''}" onclick="wizard.repeatWeeks=12;renderWizard()">×12 settimane</button></div></div><button class="cta secondary" onclick="addWizardAppointmentsBatch()" ${modesOk?'':'disabled'}>＋ Aggiungi ${selected.length} ${selected.length===1?'appuntamento':'appuntamenti'}</button>`;
+    const selected=wizard.selectedTimes||[],modesOk=selected.every(t=>wizard.studentIds.every(sid=>['dad','presence'].includes(wizardStudentModesForTime(t)[sid])));
+    return `${wizardDots()}<h2>DAD o presenza</h2><p class="sub">Imposta DAD o presenza per ogni alunno. Nella stessa lezione puoi avere alcuni alunni in DAD e altri in presenza.</p>${plannerModesHtml()}<div class="field"><label>Ricorrenza</label><div class="recurrence-pills"><button class="rec-pill ${wizard.repeatWeeks===1?'selected':''}" onclick="wizard.repeatWeeks=1;renderWizard()">Una volta</button><button class="rec-pill ${wizard.repeatWeeks===4?'selected':''}" onclick="wizard.repeatWeeks=4;renderWizard()">×4 settimane</button><button class="rec-pill ${wizard.repeatWeeks===8?'selected':''}" onclick="wizard.repeatWeeks=8;renderWizard()">×8 settimane</button><button class="rec-pill ${wizard.repeatWeeks===12?'selected':''}" onclick="wizard.repeatWeeks=12;renderWizard()">×12 settimane</button></div></div><button class="cta secondary" onclick="addWizardAppointmentsBatch()" ${modesOk?'':'disabled'}>＋ Aggiungi ${selected.length} ${selected.length===1?'appuntamento':'appuntamenti'}</button>`;
   }
   return `${wizardDots()}<h2>${wizard.quickDuplicate?'Duplica lezione':'Programma le lezioni'}</h2><p class="sub">${wizard.quickDuplicate?'Scegli il giorno: subito dopo vedrai gli orari in pillole.':'Scegli un giorno alla volta. Dopo il tap potrai selezionare uno o più orari con le pillole.'}</p>${duplicateNote}${durationHtml}<div class="field"><label>Giorno</label><div class="choices">${plannerQuickDaysHtml()}</div></div><div class="field"><label>Altra data</label><input class="input" type="date" value="${wizard.date}" onchange="setWizardDate(this.value)"></div>${appointmentListHtml()}<button class="cta" onclick="finishWizardPlanning()" ${(wizard.appointments||[]).length?'':'disabled'}>Continua con ${(wizard.appointments||[]).length} ${(wizard.appointments||[]).length===1?'appuntamento':'appuntamenti'}</button>`;
 }
@@ -902,7 +938,7 @@ function renderWizard(){
   }else if(wizard.step===5){
     const occ=wizardOccurrences(),monthlyIds=wizardMonthlyIds(),nonMonthlyIds=wizardNonMonthlyIds(),price=nonMonthlyIds.length?rateAmount(wizard.rateType):0,totalUnits=occ.reduce((a,o)=>a+(Number(o.lessonUnits)||1),0),lessonTotal=price*nonMonthlyIds.length*totalUnits,collective=wizard.lessonType==='collective';
     const names=wizard.studentIds.map(id=>studentById(id)?.name).filter(Boolean).join(', '),monthlyDetails=monthlyIds.map(id=>{const st=studentById(id);return `${st?.name||'Alunno'}: mensile ${fmtEuro(monthlyAmountForStudent(st))}/mese`}).join('<br>');
-    const plan=(wizard.appointments||[]).slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(ap=>`<div class="card" style="padding:12px"><b>${fmtDate(ap.date)} · ${ap.time}–${endTimeFromStart(ap.time,ap.duration)}</b><p style="margin:5px 0 0;color:var(--muted);font-size:12px">${ap.mode==='dad'?'💻 DAD':'🏠 Presenza'} · ${ap.lessonUnits} ${ap.lessonUnits===1?'lezione':'lezioni'} × ${durationLabel(ap.baseDuration)}${ap.repeatWeeks>1?` · ↻ ${ap.repeatWeeks} settimane`:''}</p></div>`).join('');
+    const plan=(wizard.appointments||[]).slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(ap=>`<div class="card" style="padding:12px"><b>${fmtDate(ap.date)} · ${ap.time}–${endTimeFromStart(ap.time,ap.duration)}</b><p style="margin:5px 0 0;color:var(--muted);font-size:12px">${ap.mode==='mixed'?'🔀 Mista DAD/Presenza':ap.mode==='dad'?'💻 DAD':'🏠 Presenza'} · ${ap.lessonUnits} ${ap.lessonUnits===1?'lezione':'lezioni'} × ${durationLabel(ap.baseDuration)}${ap.repeatWeeks>1?` · ↻ ${ap.repeatWeeks} settimane`:''}</p></div>`).join('');
     replaceModal(`${wizardDots()}<h2>Conferma programmazione</h2><p class="sub">${wizard.quickDuplicate?'Lezione duplicata: controlla soltanto la nuova programmazione.':`Stai registrando ${occ.length} ${occ.length===1?'appuntamento':'appuntamenti'} in un’unica operazione.`}</p><div class="note price-note"><b>${esc(names)}</b><br>${collective?'👥 Collettiva':'👤 Individuale'} · ${totalUnits} ${totalUnits===1?'lezione':'lezioni'} contabili${nonMonthlyIds.length?`<br>💶 ${rateLabel(wizard.rateType)} · ${fmtEuro(price)} per lezione${collective?' / alunno':''} · <b>Totale automatico ${fmtEuro(lessonTotal)}</b>`:' · Piano mensile'}${monthlyDetails?`<br>${monthlyDetails}`:''}</div>${plan}<button class="cta" onclick="confirmWizard()">✓ Conferma tutto</button><button class="cta secondary" onclick="wizard.step=1;wizard.plannerStage='day';renderWizard()">Modifica appuntamenti</button>`);
   }
   const back=document.querySelector('#sheet .sheet-back');if(back)back.setAttribute('onclick','wizardBack()');
@@ -941,17 +977,19 @@ function addWizardAppointmentsBatch(){
   const newApps=[];
   for(const t of selected){
     const valid=wizardTimeOptions().some(x=>x.time===t);if(!valid){toast(`${t} non è più disponibile`);return}
-    let base=wizard.baseDuration,units=wizard.lessonUnits,duration=wizard.duration,mode=wizard.quickDuplicate?wizard.mode:(wizard.timeModes?.[t]||null);
+    let base=wizard.baseDuration,units=wizard.lessonUnits,duration=wizard.duration;
     if(wizard.lessonType==='collective'){
-      const info=collectiveSlotInfo(t);if(info?.target){base=lessonBaseMinutes(info.target);units=lessonUnitCount(info.target);duration=Number(info.target.duration)||duration;mode=info.target.mode}
+      const info=collectiveSlotInfo(t);if(info?.target){base=lessonBaseMinutes(info.target);units=lessonUnitCount(info.target);duration=Number(info.target.duration)||duration}
     }
-    if(mode!=='presence'&&mode!=='dad'){toast(`Scegli DAD o presenza per le ${t}`);return}
-    newApps.push({id:uid(),date:wizard.date,time:t,baseDuration:base,lessonUnits:units,duration,mode,repeatWeeks:Math.max(1,Number(wizard.repeatWeeks)||1),seriesId:null});
+    const studentModes=wizardStudentModesForTime(t),missing=wizard.studentIds.find(sid=>!['dad','presence'].includes(studentModes[sid]));
+    if(missing){toast(`Scegli DAD o presenza per ${studentById(missing)?.name||'ogni alunno'} alle ${t}`);return}
+    const mode=aggregateStudentModes(studentModes,wizard.studentIds);
+    newApps.push({id:uid(),date:wizard.date,time:t,baseDuration:base,lessonUnits:units,duration,mode,studentModes:structuredClone(studentModes),repeatWeeks:Math.max(1,Number(wizard.repeatWeeks)||1),seriesId:null});
   }
   wizard.appointments.push(...newApps);
   const hard=analyzeWizardConflicts().filter(x=>x.hard);
   if(hard.length){wizard.appointments.splice(wizard.appointments.length-newApps.length,newApps.length);toast(`Conflitto su ${fmtDate(hard[0].date)} alle ${hard[0].time}`);return}
-  wizard.availabilityPreset=null;wizard.date='';wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.repeatWeeks=1;wizard.plannerStage='day';if(!wizard.quickDuplicate)wizard.mode=null;renderWizard();toast(`${newApps.length} ${newApps.length===1?'appuntamento aggiunto':'appuntamenti aggiunti'}`);
+  wizard.availabilityPreset=null;wizard.date='';wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.timeStudentModes={};wizard.repeatWeeks=1;wizard.plannerStage='day';if(!wizard.quickDuplicate)wizard.mode=null;renderWizard();toast(`${newApps.length} ${newApps.length===1?'appuntamento aggiunto':'appuntamenti aggiunti'}`);
 }
 function addWizardAppointment(){
   if(!wizard.date){toast('Scegli il giorno');return}
@@ -959,14 +997,11 @@ function addWizardAppointment(){
   if(wizard.mode!=='presence'&&wizard.mode!=='dad'){toast('Scegli DAD o presenza');return}
   if(!ensureMonthOpen(wizard.date.slice(0,7),'aggiungere una lezione'))return;
   const valid=wizardTimeOptions().some(x=>x.time===wizard.time);if(!valid){wizard.time='';toast('Questo orario non è più disponibile');renderWizard();return}
-  if(wizard.lessonType==='collective'){
-    const info=collectiveSlotInfo(wizard.time);if(info.target&&info.target.mode!==wizard.mode){toast(`Lo slot è già ${info.target.mode==='dad'?'DAD':'in presenza'}: usa la stessa modalità`);return}
-  }
-  const ap={id:uid(),date:wizard.date,time:wizard.time,baseDuration:wizard.baseDuration,lessonUnits:wizard.lessonUnits,duration:wizard.duration,mode:wizard.mode,repeatWeeks:Math.max(1,Number(wizard.repeatWeeks)||1),seriesId:null};
+    const ap={id:uid(),date:wizard.date,time:wizard.time,baseDuration:wizard.baseDuration,lessonUnits:wizard.lessonUnits,duration:wizard.duration,mode:wizard.mode,repeatWeeks:Math.max(1,Number(wizard.repeatWeeks)||1),seriesId:null};
   wizard.appointments.push(ap);
   const hard=analyzeWizardConflicts().filter(x=>x.hard);
   if(hard.length){wizard.appointments.pop();toast(`Conflitto su ${fmtDate(hard[0].date)} alle ${hard[0].time}`);renderWizard();return}
-  wizard.date='';wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.repeatWeeks=1;wizard.plannerStage='day';if(!wizard.quickDuplicate)wizard.mode=null;renderWizard();toast('Appuntamento aggiunto');
+  wizard.date='';wizard.time='';wizard.selectedTimes=[];wizard.timeModes={};wizard.timeStudentModes={};wizard.repeatWeeks=1;wizard.plannerStage='day';if(!wizard.quickDuplicate)wizard.mode=null;renderWizard();toast('Appuntamento aggiunto');
 }
 function removeWizardAppointment(id){wizard.appointments=(wizard.appointments||[]).filter(x=>x.id!==id);renderWizard()}
 function finishWizardPlanning(){
@@ -984,7 +1019,7 @@ function analyzeWizardConflicts(){
   return occ.map((o,idx)=>{
     const overlaps=data.lessons.filter(l=>l.status!=='cancelled'&&l.date===o.date&&timeRangesOverlap(o.time,o.duration,l.time,l.duration));
     const sameStudent=overlaps.filter(l=>l.studentIds.some(id=>wizard.studentIds.includes(id)));
-    const exact=overlaps.filter(l=>l.time===o.time&&Number(l.duration)===Number(o.duration)&&l.mode===o.mode&&!l.studentIds.some(id=>wizard.studentIds.includes(id)));
+    const exact=overlaps.filter(l=>l.time===o.time&&Number(l.duration)===Number(o.duration)&&!l.studentIds.some(id=>wizard.studentIds.includes(id)));
     const possibleTarget=wizard.lessonType==='collective'&&!sameStudent.length&&overlaps.length===1&&exact.length===1?exact[0]:null;
     const additions=possibleTarget?wizard.studentIds.filter(id=>!possibleTarget.studentIds.includes(id)).length:0;
     const capacityOk=!possibleTarget||possibleTarget.studentIds.length+additions<=MAX_COLLECTIVE_STUDENTS;
@@ -1000,22 +1035,22 @@ function openWizardConflict(conflicts){
   const html=`<h2>Controllo sovrapposizioni</h2><p class="sub">Controllo tutti gli appuntamenti e le ricorrenze prima di salvarli.</p>${hard.length?`<div class="note warning-note"><b>Da correggere:</b><br>${hard.map(x=>`${fmtDate(x.date)} · ${x.time}: ${x.internal?.length?'si sovrappone a un altro appuntamento inserito nello stesso flusso':x.sameStudent.length?'uno degli alunni è già inserito':x.capacityFull?`la collettiva supererebbe il massimo di ${MAX_COLLECTIVE_STUDENTS} alunni`:'c’è già una lezione che si sovrappone'}`).join('<br>')}</div>`:''}${mergeable.length?`<div class="note"><b>${mergeable.length} slot collettivi già aperti.</b><br>Posso aggiungere gli alunni selezionati alle lezioni esistenti nello stesso orario.</div>`:''}${!hard.length&&mergeable.length?`<button class="cta" onclick="commitWizardLessons(true)">👥 Unisci agli slot collettivi</button>`:''}<button class="cta secondary" onclick="closeModal();wizard.step=1;renderWizard()">Modifica appuntamenti</button>`;
   showModal(html);
 }
-function mergeStudentsIntoLesson(target){
-  target.lessonType='collective';
+function mergeStudentsIntoLesson(target,occurrence){
+  target.lessonType='collective';syncLessonMode(target);
   const monthlyIds=wizardMonthlyIds(),newIds=wizard.studentIds.filter(id=>!target.studentIds.includes(id));
   if(target.studentIds.length+newIds.length>MAX_COLLECTIVE_STUDENTS){toast(`Collettiva piena: massimo ${MAX_COLLECTIVE_STUDENTS} alunni`);return false}
+  target.studentModes=target.studentModes||{};newIds.forEach(sid=>{const m=occurrence?.studentModes?.[sid];target.studentModes[sid]=m==='dad'?'dad':'presence'});
   target.studentIds=[...target.studentIds,...newIds];target.monthlyStudentIds=[...new Set([...lessonMonthlyIds(target),...monthlyIds])];target.monthlyAmountsByStudent=Object.assign({},target.monthlyAmountsByStudent||{});
   monthlyIds.forEach(id=>{const st=studentById(id),amt=monthlyAmountForStudent(st);target.monthlyAmountsByStudent[id]=amt;ensureMonthlyPayment(id,target.date.slice(0,7),amt)});
   const billable=target.studentIds.filter(id=>!target.monthlyStudentIds.includes(id));if(billable.length){target.rateType='collective';target.pricePerStudent=10;target.pricingMissing=false}else{target.rateType='monthly';target.pricePerStudent=0;target.pricingMissing=false}
-  target.updatedAt=new Date().toISOString();target.mergedAt=target.updatedAt;
-  return newIds;
+  syncLessonMode(target);target.updatedAt=new Date().toISOString();target.mergedAt=target.updatedAt;return newIds;
 }
 function buildLessonForOccurrence(o){
   const monthlyIds=wizardMonthlyIds(),nonMonthlyIds=wizardNonMonthlyIds(),price=nonMonthlyIds.length?rateAmount(wizard.rateType):0,monthlyAmountsByStudent={};
   monthlyIds.forEach(id=>{const st=studentById(id);monthlyAmountsByStudent[id]=monthlyAmountForStudent(st)});
   const temp={date:o.date,time:o.time,duration:o.duration},past=lessonHasEnded(temp);
-  const l={id:uid(),studentIds:[...wizard.studentIds],date:o.date,time:o.time,baseDuration:o.baseDuration,lessonUnits:o.lessonUnits,duration:o.duration,mode:o.mode,lessonType:wizard.lessonType||((wizard.studentIds.length>1||wizard.rateType==='collective')?'collective':'individual'),rateType:nonMonthlyIds.length?wizard.rateType:'monthly',pricePerStudent:price,monthlyStudentIds:[...monthlyIds],monthlyAmountsByStudent,pricingMissing:false,status:past?'completed':'scheduled',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),recoveryOf:wizard.recoveryOf||null,seriesId:o.seriesId||null,duplicatedFrom:wizard.duplicateSourceId||null};
-  if(past)l.completedAt=new Date().toISOString();return l;
+  const l={id:uid(),studentIds:[...wizard.studentIds],date:o.date,time:o.time,baseDuration:o.baseDuration,lessonUnits:o.lessonUnits,duration:o.duration,mode:o.mode,studentModes:structuredClone(o.studentModes||{}),lessonType:wizard.lessonType||((wizard.studentIds.length>1||wizard.rateType==='collective')?'collective':'individual'),rateType:nonMonthlyIds.length?wizard.rateType:'monthly',pricePerStudent:price,monthlyStudentIds:[...monthlyIds],monthlyAmountsByStudent,pricingMissing:false,status:past?'completed':'scheduled',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),recoveryOf:wizard.recoveryOf||null,seriesId:o.seriesId||null,duplicatedFrom:wizard.duplicateSourceId||null};
+  syncLessonMode(l);if(past)l.completedAt=new Date().toISOString();return l;
 }
 function commitWizardLessons(mergeExisting=false){
   const analysis=analyzeWizardConflicts();
@@ -1025,7 +1060,7 @@ function commitWizardLessons(mergeExisting=false){
   for(const a of analysis){
     if(!ensureMonthOpen(a.date.slice(0,7),'aggiungere una lezione'))return;
     if(a.mergeTarget){
-      const addedIds=mergeStudentsIntoLesson(a.mergeTarget);
+      const addedIds=mergeStudentsIntoLesson(a.mergeTarget,a);
       if(addedIds===false)return;
       if(Array.isArray(addedIds)&&addedIds.length)messageEntries.push({lessonId:a.mergeTarget.id,studentIds:[...addedIds]});
       merged++;continue;
@@ -1079,7 +1114,7 @@ function rateChoicesHtml(selected,studentCount,onpick){
 
 function cloneLessonForStudent(l,sid,overrides={}){
   const c=structuredClone(l),monthly=studentIsMonthlyInLesson(l,sid);
-  c.id=uid();c.studentIds=[sid];c.monthlyStudentIds=monthly?[sid]:[];
+  c.id=uid();c.studentIds=[sid];c.studentModes={[sid]:lessonModeForStudent(l,sid)};c.mode=c.studentModes[sid];c.monthlyStudentIds=monthly?[sid]:[];
   c.monthlyAmountsByStudent=monthly?{[sid]:Number(l.monthlyAmountsByStudent?.[sid])||monthlyAmountForStudent(studentById(sid))}:{};
   c.sourceLessonId=l.id;c.sourceSeriesId=l.seriesId||null;c.seriesId=null;c.detachedFromGroup=true;
   c.createdAt=new Date().toISOString();c.updatedAt=c.createdAt;
@@ -1088,6 +1123,7 @@ function cloneLessonForStudent(l,sid,overrides={}){
 }
 function removeStudentParticipationRaw(l,sid){
   l.studentIds=(l.studentIds||[]).filter(id=>id!==sid);
+  if(l.studentModes)delete l.studentModes[sid];syncLessonMode(l);
   l.monthlyStudentIds=lessonMonthlyIds(l).filter(id=>id!==sid);
   const nextAmounts={};l.monthlyStudentIds.forEach(id=>{nextAmounts[id]=Number(l.monthlyAmountsByStudent?.[id])||monthlyAmountForStudent(studentById(id))});
   l.monthlyAmountsByStudent=nextAmounts;
@@ -1147,7 +1183,7 @@ function startDuplicateLesson(id){
   const l=data.lessons.find(x=>x.id===id);if(!l)return;
   const billable=l.studentIds.filter(sid=>!studentIsMonthlyInLesson(l,sid));
   if(billable.length&&!hasValidPricing(l)){toast('Imposta prima la tariffa della lezione da duplicare');return}
-  wizard={step:1,introStep:'type',studentIds:[...l.studentIds],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},plannerStage:'day',baseDuration:lessonBaseMinutes(l),lessonUnits:lessonUnitCount(l),duration:Number(l.duration)||60,mode:l.mode,rateType:l.rateType,repeatWeeks:1,recoveryOf:null,lessonType:lessonIsCollective(l)?'collective':'individual',quickDuplicate:true,duplicateSourceId:id};
+  wizard={step:1,introStep:'type',studentIds:[...l.studentIds],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},timeStudentModes:{},plannerStage:'day',baseDuration:lessonBaseMinutes(l),lessonUnits:lessonUnitCount(l),duration:Number(l.duration)||60,mode:l.mode,rateType:l.rateType,repeatWeeks:1,recoveryOf:null,lessonType:lessonIsCollective(l)?'collective':'individual',quickDuplicate:true,duplicateSourceId:id,duplicateStudentModes:structuredClone(l.studentModes||Object.fromEntries(l.studentIds.map(sid=>[sid,lessonModeForStudent(l,sid)])))};
   modalStack=[];renderWizard();toast('Duplica: scegli solo giorno e ora');
 }
 function openLesson(id,replace=false){
@@ -1156,8 +1192,8 @@ function openLesson(id,replace=false){
   const value=billable.length?fmtEuro(lessonRevenue(l)):'Mensile',locked=isMonthClosed(l.date.slice(0,7));
   const statusActions=lessonHasEnded(l)&&!locked?`<div class="section-title"><h2>Stato lezione</h2></div><div class="status-actions"><button class="choice ${l.status==='completed'?'selected':''}" onclick="setLessonStatus('${id}','completed')">✅ Svolta</button><button class="choice ${l.status==='absent'?'selected':''}" onclick="openAbsentOptions('${id}')">👤 Assente</button><button class="choice ${l.status==='recovery'?'selected':''}" onclick="setLessonStatus('${id}','recovery')">↻ Da recuperare</button><button class="choice ${l.status==='cancelled'?'selected':''}" onclick="setLessonStatus('${id}','cancelled')">✕ Annullata</button></div>`:'';
   const recoveryAction=l.status==='recovery'?`<button class="cta" onclick="startRecovery('${id}')">↻ Programma recupero</button>`:'';
-  const participants=l.studentIds.map(sid=>{const st=studentById(sid);if(!st)return'';const monthly=studentIsMonthlyInLesson(l,sid);return `<div class="participant-row"><div class="participant-main"><b>${esc(st.name)}</b><small>${monthly?'Mensile':hasValidPricing(l)?`${rateLabel(l.rateType)} · ${fmtEuro(lessonPriceForStudent(l,sid))}${lessonUnitCount(l)>1?` × ${lessonUnitCount(l)} = ${fmtEuro(lessonChargeForStudent(l,sid))}`:''}`:'Tariffa da impostare'}</small></div>${!locked&&l.status!=='cancelled'?`<div class="participant-actions"><button class="smallbtn" onclick="moveStudentFromLesson('${id}','${sid}')">✎ Modifica</button><button class="smallbtn warn-mini" onclick="cancelStudentFromLesson('${id}','${sid}')">Annulla</button><button class="smallbtn danger-mini" onclick="deleteStudentFromLesson('${id}','${sid}')">Elimina</button></div>`:''}</div>`}).join('');
-  const lessonHtml=`<h2>${esc(lessonStudentNames(l))}</h2><p class="sub">${fmtDate(l.date)} · ${lessonTimeRange(l)} · ${lessonUnitsLabel(l)}</p>${locked?`<div class="month-lock"><b>🔒 ${fmtMonth(l.date.slice(0,7))} chiuso</b><small>Riapri il mese da Pagamenti per modificare questa lezione.</small></div>`:''}<div class="lesson-status-line"><span class="status ${lessonStatusClass(l)}">${status.toUpperCase()}</span></div>${!pricing&&isAccountingLesson(l)?`<div class="note warning-note"><b>Tariffa mancante:</b> questa lezione non può essere valorizzata automaticamente. Premi “Modifica lezione” e scegli la tariffa.</div>`:''}<div class="statrow"><div class="stat"><b>${lessonUnitCount(l)}</b><small>${lessonUnitCount(l)===1?'lezione':'lezioni'}</small></div><div class="stat"><b>${durationLabel(l.duration)}</b><small>blocco totale</small></div><div class="stat"><b>${value}</b><small>${billable.length?'valore lezione':'piano'}</small></div></div><div class="note price-note"><b>${l.mode==='dad'?'💻 DAD':'🏠 Presenza'}</b> · ${lessonPricingShort(l)}</div>${pastPending?`<div class="note warning-note"><b>Contabilità:</b> questa lezione è passata ma non è stata ancora confermata. Scegli cosa è successo: non verrà conteggiata finché non la confermi.</div>`:''}${statusActions}${recoveryAction}<div class="section-title"><h2>Alunni della lezione</h2><span style="color:var(--muted);font-size:11px">${lessonIsCollective(l)?'gestibili singolarmente':'lezione individuale'}</span></div>${participants}${l.status!=='cancelled'?`<button class="cta secondary" onclick="startDuplicateLesson('${id}')">⧉ Duplica lezione</button>`:''}${!locked?`<button class="cta secondary" onclick="openLessonEdit('${id}')">✎ Modifica tutta la lezione</button>`:''}${l.status!=='cancelled'?`<button class="cta" onclick="openSendForLesson('${id}')">📲 Messaggi WhatsApp</button>`:''}${!locked?`<button class="cta danger" onclick="deleteLesson('${id}')">🗑 Elimina lezione</button>`:''}`;
+  const participants=l.studentIds.map(sid=>{const st=studentById(sid);if(!st)return'';const monthly=studentIsMonthlyInLesson(l,sid);return `<div class="participant-row"><div class="participant-main"><b>${esc(st.name)}</b><small><span class="pill ${lessonModeForStudent(l,sid)==='dad'?'dad':'presence'}">${modeLabelForStudent(l,sid)}</span> · ${monthly?'Mensile':hasValidPricing(l)?`${rateLabel(l.rateType)} · ${fmtEuro(lessonPriceForStudent(l,sid))}${lessonUnitCount(l)>1?` × ${lessonUnitCount(l)} = ${fmtEuro(lessonChargeForStudent(l,sid))}`:''}`:'Tariffa da impostare'}</small></div>${!locked&&l.status!=='cancelled'?`<div class="participant-actions"><button class="smallbtn" onclick="moveStudentFromLesson('${id}','${sid}')">✎ Modifica</button><button class="smallbtn warn-mini" onclick="cancelStudentFromLesson('${id}','${sid}')">Annulla</button><button class="smallbtn danger-mini" onclick="deleteStudentFromLesson('${id}','${sid}')">Elimina</button></div>`:''}</div>`}).join('');
+  const lessonHtml=`<h2>${esc(lessonStudentNames(l))}</h2><p class="sub">${fmtDate(l.date)} · ${lessonTimeRange(l)} · ${lessonUnitsLabel(l)}</p>${locked?`<div class="month-lock"><b>🔒 ${fmtMonth(l.date.slice(0,7))} chiuso</b><small>Riapri il mese da Pagamenti per modificare questa lezione.</small></div>`:''}<div class="lesson-status-line"><span class="status ${lessonStatusClass(l)}">${status.toUpperCase()}</span></div>${!pricing&&isAccountingLesson(l)?`<div class="note warning-note"><b>Tariffa mancante:</b> questa lezione non può essere valorizzata automaticamente. Premi “Modifica lezione” e scegli la tariffa.</div>`:''}<div class="statrow"><div class="stat"><b>${lessonUnitCount(l)}</b><small>${lessonUnitCount(l)===1?'lezione':'lezioni'}</small></div><div class="stat"><b>${durationLabel(l.duration)}</b><small>blocco totale</small></div><div class="stat"><b>${value}</b><small>${billable.length?'valore lezione':'piano'}</small></div></div><div class="note price-note"><b>${lessonModeIconLabel(l)}</b> · ${lessonPricingShort(l)}</div>${pastPending?`<div class="note warning-note"><b>Contabilità:</b> questa lezione è passata ma non è stata ancora confermata. Scegli cosa è successo: non verrà conteggiata finché non la confermi.</div>`:''}${statusActions}${recoveryAction}<div class="section-title"><h2>Alunni della lezione</h2><span style="color:var(--muted);font-size:11px">${lessonIsCollective(l)?'gestibili singolarmente':'lezione individuale'}</span></div>${participants}${l.status!=='cancelled'?`<button class="cta secondary" onclick="startDuplicateLesson('${id}')">⧉ Duplica lezione</button>`:''}${!locked?`<button class="cta secondary" onclick="openLessonEdit('${id}')">✎ Modifica tutta la lezione</button>`:''}${l.status!=='cancelled'?`<button class="cta" onclick="openSendForLesson('${id}')">📲 Messaggi WhatsApp</button>`:''}${!locked?`<button class="cta danger" onclick="deleteLesson('${id}')">🗑 Elimina lezione</button>`:''}`;
   if(replace)replaceModal(lessonHtml);else showModal(lessonHtml);
 }
 function setLessonStatus(id,status){
@@ -1182,7 +1218,7 @@ function openRecoveries(){
 }
 function startRecovery(id){
   const l=data.lessons.find(x=>x.id===id);if(!l)return;
-  wizard={step:1,introStep:'type',studentIds:[...l.studentIds],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},plannerStage:'day',baseDuration:lessonBaseMinutes(l),lessonUnits:lessonUnitCount(l),duration:Number(l.duration)||60,mode:l.mode,rateType:l.rateType,repeatWeeks:1,recoveryOf:id,lessonType:lessonIsCollective(l)?'collective':'individual',quickDuplicate:false,duplicateSourceId:null};
+  wizard={step:1,introStep:'type',studentIds:[...l.studentIds],appointments:[],date:'',time:'',selectedTimes:[],timeModes:{},timeStudentModes:{},plannerStage:'day',baseDuration:lessonBaseMinutes(l),lessonUnits:lessonUnitCount(l),duration:Number(l.duration)||60,mode:l.mode,rateType:l.rateType,repeatWeeks:1,recoveryOf:id,lessonType:lessonIsCollective(l)?'collective':'individual',quickDuplicate:false,duplicateSourceId:null};
   modalStack=[];renderWizard();toast('Scegli uno o più appuntamenti di recupero');
 }
 function editSelectedStudentIds(){
@@ -1228,9 +1264,16 @@ function openLessonEdit(id){
   const times=allowedLessonTimes(),base=lessonBaseMinutes(l),units=lessonUnitCount(l),currentType=lessonIsCollective(l)?'collective':'individual';
   const baseOpts=([60,90].includes(base)?[60,90]:[base,60,90]).filter((v,i,a)=>a.indexOf(v)===i);
   const people=activeStudents().concat(archivedStudents().filter(st=>l.studentIds.includes(st.id))).filter((st,i,a)=>a.findIndex(x=>x.id===st.id)===i).sort((a,b)=>a.name.localeCompare(b.name));
-  showModal(`<h2>Modifica lezione</h2><p class="sub">Puoi cambiare completamente la lezione: tipologia, alunni, data, ora, durata e modalità.</p><div class="field"><label>Tipo lezione</label><input type="hidden" id="editLessonType" value="${currentType}"><div class="choices"><button type="button" class="choice ${currentType==='individual'?'selected':''}" data-edit-type="individual" onclick="setEditLessonType('individual')"><b>👤 Individuale</b><small>1 solo alunno</small></button><button type="button" class="choice ${currentType==='collective'?'selected':''}" data-edit-type="collective" onclick="setEditLessonType('collective')"><b>👥 Collettiva</b><small>1 o più alunni · €10 per i non mensili</small></button></div></div><div class="field"><label>Alunni</label>${people.map(st=>`<label class="studentpick"><input type="checkbox" name="editStudent" value="${st.id}" ${l.studentIds.includes(st.id)?'checked':''} onchange="refreshEditLessonPricing()"><span>${esc(st.name)}${studentBillingType(st)==='monthly'?' · Mensile':''}${st.active===false?' · eliminato':''}</span></label>`).join('')}</div><div class="row"><div class="field"><label>Data</label><input class="input" id="editDate" type="date" value="${l.date}"></div><div class="field"><label>Ora inizio</label><select class="input" id="editTime">${times.map(t=>`<option ${t===l.time?'selected':''}>${t}</option>`).join('')}</select></div></div><div class="row"><div class="field"><label>Durata singola</label><select class="input" id="editBaseDuration">${baseOpts.map(v=>`<option value="${v}" ${v===base?'selected':''}>${[60,90].includes(v)?durationLabel(v):durationLabel(v)+' · storico'}</option>`).join('')}</select></div><div class="field"><label>Lezioni consecutive</label><select class="input" id="editLessonUnits" onchange="refreshEditLessonPricing()"><option value="1" ${units===1?'selected':''}>+1</option><option value="2" ${units===2?'selected':''}>+2</option></select></div></div><div class="field"><label>Modalità</label><select class="input" id="editMode"><option value="presence" ${l.mode==='presence'?'selected':''}>Presenza</option><option value="dad" ${l.mode==='dad'?'selected':''}>DAD</option></select></div><div class="note price-note" id="editPricingPreview" data-lesson-id="${id}"></div><div class="note"><b>Tariffa automatica:</b> Individuale usa la tariffa salvata dell’alunno (€20 o abituale €15); Collettiva usa €10 per ogni alunno non mensile. Gli alunni mensili non aggiungono costi alla singola lezione.</div><button class="cta" onclick="saveLessonEdit('${id}')">Salva modifiche</button>`);
-  setTimeout(refreshEditLessonPricing,0);
+  showModal(`<h2>Modifica lezione</h2><p class="sub">Puoi cambiare completamente la lezione: tipologia, alunni, data, ora, durata e modalità.</p><div class="field"><label>Tipo lezione</label><input type="hidden" id="editLessonType" value="${currentType}"><div class="choices"><button type="button" class="choice ${currentType==='individual'?'selected':''}" data-edit-type="individual" onclick="setEditLessonType('individual')"><b>👤 Individuale</b><small>1 solo alunno</small></button><button type="button" class="choice ${currentType==='collective'?'selected':''}" data-edit-type="collective" onclick="setEditLessonType('collective')"><b>👥 Collettiva</b><small>1 o più alunni · €10 per i non mensili</small></button></div></div><div class="field"><label>Alunni</label>${people.map(st=>`<label class="studentpick"><input type="checkbox" name="editStudent" value="${st.id}" ${l.studentIds.includes(st.id)?'checked':''} onchange="refreshEditLessonPricing();refreshEditStudentModes()"><span>${esc(st.name)}${studentBillingType(st)==='monthly'?' · Mensile':''}${st.active===false?' · eliminato':''}</span></label>`).join('')}</div><div class="row"><div class="field"><label>Data</label><input class="input" id="editDate" type="date" value="${l.date}"></div><div class="field"><label>Ora inizio</label><select class="input" id="editTime">${times.map(t=>`<option ${t===l.time?'selected':''}>${t}</option>`).join('')}</select></div></div><div class="row"><div class="field"><label>Durata singola</label><select class="input" id="editBaseDuration">${baseOpts.map(v=>`<option value="${v}" ${v===base?'selected':''}>${[60,90].includes(v)?durationLabel(v):durationLabel(v)+' · storico'}</option>`).join('')}</select></div><div class="field"><label>Lezioni consecutive</label><select class="input" id="editLessonUnits" onchange="refreshEditLessonPricing()"><option value="1" ${units===1?'selected':''}>+1</option><option value="2" ${units===2?'selected':''}>+2</option></select></div></div><div class="field"><label>Modalità per alunno</label><div id="editStudentModes"></div></div><div class="note"><b>Modalità mista:</b> nella stessa collettiva puoi avere contemporaneamente alunni in DAD e alunni in presenza.</div><div class="note price-note" id="editPricingPreview" data-lesson-id="${id}"></div><div class="note"><b>Tariffa automatica:</b> Individuale usa la tariffa salvata dell’alunno (€20 o abituale €15); Collettiva usa €10 per ogni alunno non mensile. Gli alunni mensili non aggiungono costi alla singola lezione.</div><button class="cta" onclick="saveLessonEdit('${id}')">Salva modifiche</button>`);
+  setTimeout(()=>{refreshEditLessonPricing();refreshEditStudentModes()},0);
 }
+function refreshEditStudentModes(){
+  const box=document.getElementById('editStudentModes');if(!box)return;
+  const lessonId=document.getElementById('editPricingPreview')?.dataset?.lessonId,l=data.lessons.find(x=>x.id===lessonId);if(!l)return;
+  const ids=editSelectedStudentIds();
+  box.innerHTML=ids.map(sid=>{const st=studentById(sid),current=document.querySelector(`[name=editMode_${sid}]:checked`)?.value||lessonModeForStudent(l,sid);return `<div class="mode-student-row"><span><b>${esc(st?.name||'Alunno')}</b></span><div class="mode-pills"><label class="mode-pill ${current==='presence'?'selected':''}"><input type="radio" name="editMode_${sid}" value="presence" ${current==='presence'?'checked':''} onchange="refreshEditStudentModes()" hidden>🏠 Presenza</label><label class="mode-pill ${current==='dad'?'selected':''}"><input type="radio" name="editMode_${sid}" value="dad" ${current==='dad'?'checked':''} onchange="refreshEditStudentModes()" hidden>💻 DAD</label></div></div>`}).join('')||'<small>Seleziona almeno un alunno.</small>';
+}
+function readEditStudentModes(ids,l){const map={};for(const sid of ids){const m=document.querySelector(`[name=editMode_${sid}]:checked`)?.value||lessonModeForStudent(l,sid);map[sid]=m==='dad'?'dad':'presence'}return map}
 function saveLessonEdit(id){
   const l=data.lessons.find(x=>x.id===id);if(!l)return;if(!lessonMonthOpen(l,'modificare la lezione'))return;
   const ids=editSelectedStudentIds();if(!ids.length){toast('Seleziona almeno un alunno');return}
@@ -1244,12 +1287,12 @@ function saveLessonEdit(id){
   if(!timeFitsAvailability(editTime,editDuration)){toast('Questo blocco non entra negli orari 09:00–13:00 o 16:00–20:00');return}
   const conflicts=data.lessons.filter(x=>x.id!==l.id&&x.status!=='cancelled'&&x.date===newDate&&timeRangesOverlap(editTime,editDuration,x.time,x.duration));
   if(conflicts.length){toast('La modifica si sovrappone a un’altra lezione');return}
-  l.studentIds=ids;l.monthlyStudentIds=monthlyIds;l.monthlyAmountsByStudent=monthlyAmountsByStudent;l.date=newDate;l.time=editTime;l.baseDuration=editBase;l.lessonUnits=editUnits;l.duration=editDuration;l.mode=document.getElementById('editMode').value;l.lessonType=editType;l.rateType=billableIds.length?rate:'monthly';l.pricePerStudent=billableIds.length?rateAmount(rate):0;l.pricingMissing=false;l.updatedAt=new Date().toISOString();
+  l.studentIds=ids;l.studentModes=readEditStudentModes(ids,l);syncLessonMode(l);l.monthlyStudentIds=monthlyIds;l.monthlyAmountsByStudent=monthlyAmountsByStudent;l.date=newDate;l.time=editTime;l.baseDuration=editBase;l.lessonUnits=editUnits;l.duration=editDuration;l.lessonType=editType;l.rateType=billableIds.length?rate:'monthly';l.pricePerStudent=billableIds.length?rateAmount(rate):0;l.pricingMissing=false;l.updatedAt=new Date().toISOString();
   if(l.status==='completed'&&!lessonHasEnded(l)){l.status='scheduled';delete l.completedAt}
   save('Modifica lezione completa');modalStack.pop();openLesson(id,true);toast(editType==='collective'?'Lezione aggiornata come collettiva':'Lezione aggiornata come individuale');
 }
 function buildMessage(l,s){
-  const kind=l.mode==='dad'?'in modalità DAD':'in presenza',group=lessonIsCollective(l)?' La lezione sarà collettiva.':'',units=lessonUnitCount(l)>1?` Sono ${lessonUnitCount(l)} lezioni consecutive da ${durationLabel(lessonBaseMinutes(l))} (${durationLabel(l.duration)} totali).`:'';
+  const sid=s.id,kind=lessonModeForStudent(l,sid)==='dad'?'in modalità DAD':'in presenza',group=lessonIsCollective(l)?' La lezione sarà collettiva.':'',units=lessonUnitCount(l)>1?` Sono ${lessonUnitCount(l)} lezioni consecutive da ${durationLabel(lessonBaseMinutes(l))} (${durationLabel(l.duration)} totali).`:'';
   return `Ciao ${s.name.split(' ')[0]}, confermo la lezione di matematica per ${fmtDate(l.date)} dalle ${l.time} alle ${endTimeFromStart(l.time,l.duration)}, ${kind}.${group}${units}`;
 }
 function weekStartKey(k){
@@ -1269,13 +1312,13 @@ function postBookingLessonsForStudent(sid){
 function weeklyBookingGroupsForStudent(sid){
   const groups={};postBookingLessonsForStudent(sid).forEach(l=>{const wk=weekStartKey(l.date);(groups[wk]||(groups[wk]=[])).push(l)});return groups;
 }
-function weeklyLessonLine(l){
-  const mode=l.mode==='dad'?'DAD':'Presenza',group=lessonIsCollective(l)?' · collettiva':'',units=lessonUnitCount(l)>1?` · ${lessonUnitsLabel(l)}`:'';
+function weeklyLessonLine(l,sid){
+  const mode=modeLabelForStudent(l,sid),group=lessonIsCollective(l)?' · collettiva':'',units=lessonUnitCount(l)>1?` · ${lessonUnitsLabel(l)}`:'';
   return `• ${fmtDate(l.date)} · ${l.time}–${endTimeFromStart(l.time,l.duration)} · ${mode}${group}${units}`;
 }
 function buildWeeklyMessage(s,lessons){
   const sorted=[...lessons].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
-  return `Ciao ${s.name.split(' ')[0]}, ti confermo le lezioni di matematica della settimana:\n\n${sorted.map(weeklyLessonLine).join('\n')}\n\nA presto!`;
+  return `Ciao ${s.name.split(' ')[0]}, ti confermo le lezioni di matematica della settimana:\n\n${sorted.map(l=>weeklyLessonLine(l,s.id)).join('\n')}\n\nA presto!`;
 }
 function sendWeeklyWhatsApp(sid,weekKey,target='student'){
   const s=studentById(sid);if(!s)return;const lessons=weeklyBookingGroupsForStudent(sid)[weekKey]||[];if(lessons.length<2){toast('Servono almeno 2 appuntamenti nella stessa settimana');return}
@@ -1297,7 +1340,7 @@ function waUrl(phone,msg){const p=normalizePhone(phone);return `https://wa.me/${
 function sendWhatsApp(lid,sid,target='student'){const l=data.lessons.find(x=>x.id===lid),s=studentById(sid);if(!l||!s)return;const phone=target==='parent'?(s.parentPhone||s.phone):s.phone;if(!phone){toast('Numero non inserito');return}window.location.href=waUrl(phone,buildMessage(l,s))}
 function openSendForLesson(id){
   const l=data.lessons.find(x=>x.id===id);if(!l)return;
-  showModal(`<h2>Invia conferme</h2><p class="sub">${fmtDate(l.date)} · ${lessonTimeRange(l)} · ${lessonUnitsLabel(l)} · ${l.mode==='dad'?'DAD':'Presenza'} · ${lessonTypeLabel(l)}</p>${l.studentIds.map(sid=>{const s=studentById(sid);if(!s)return'';return `<div class="card"><b>${esc(s.name)}</b><p style="color:var(--muted);font-size:12px">${esc(buildMessage(l,s))}</p><div class="sendgrid"><button class="smallbtn wa" onclick="sendWhatsApp('${l.id}','${sid}','student')">WhatsApp alunno</button>${s.parentPhone?`<button class="smallbtn wa" onclick="sendWhatsApp('${l.id}','${sid}','parent')">WhatsApp genitore</button>`:'<button class="smallbtn" disabled>Nessun genitore</button>'}</div></div>`}).join('')}<button class="cta secondary" onclick="modalBack()">Indietro</button>`);
+  showModal(`<h2>Invia conferme</h2><p class="sub">${fmtDate(l.date)} · ${lessonTimeRange(l)} · ${lessonUnitsLabel(l)} · ${lessonModeLabel(l)} · ${lessonTypeLabel(l)}</p>${l.studentIds.map(sid=>{const s=studentById(sid);if(!s)return'';return `<div class="card"><b>${esc(s.name)}</b><p style="color:var(--muted);font-size:12px">${esc(buildMessage(l,s))}</p><div class="sendgrid"><button class="smallbtn wa" onclick="sendWhatsApp('${l.id}','${sid}','student')">WhatsApp alunno</button>${s.parentPhone?`<button class="smallbtn wa" onclick="sendWhatsApp('${l.id}','${sid}','parent')">WhatsApp genitore</button>`:'<button class="smallbtn" disabled>Nessun genitore</button>'}</div></div>`}).join('')}<button class="cta secondary" onclick="modalBack()">Indietro</button>`);
 }
 
 function renderAgenda(){
@@ -1320,12 +1363,12 @@ function openThirtyDaySummary(){
     days30.push({d,dk,lessons});
   }
   const all=days30.flatMap(x=>x.lessons),occupied=days30.filter(x=>x.lessons.length).length,lessonUnitsTotal=all.reduce((n,l)=>n+lessonUnitCount(l),0),appointments=all.reduce((n,l)=>n+l.studentIds.length*lessonUnitCount(l),0);
-  replaceModal(`<h2>Prossimi 30 giorni</h2><p class="sub">Dal ${fmtDate(start)} al ${fmtDate(end)}. Qui trovi anche le lezioni create in serie.</p><div class="statrow"><div class="stat"><b>${lessonUnitsTotal}</b><small>Lezioni</small></div><div class="stat"><b>${appointments}</b><small>Posti alunno</small></div><div class="stat"><b>${occupied}</b><small>Giorni occupati</small></div></div><div class="note"><b>Gestione rapida:</b> tocca una lezione per modificarla, annullarla o eliminare anche un solo alunno senza toccare gli altri della collettiva.</div><div class="range30">${days30.map((x,i)=>`<div class="range-day ${i===0?'today-range':''}"><button class="range-head" onclick="renderSummaryModal('${x.dk}',true)"><span class="range-date"><b>${x.d.getDate()}</b><small>${days[x.d.getDay()].slice(0,3)}</small></span><span class="range-title"><b>${fmtDate(x.dk)}</b><small>${x.lessons.length?`${x.lessons.reduce((a,l)=>a+lessonUnitCount(l),0)} lezioni · ${x.lessons.length} ${x.lessons.length===1?'blocco':'blocchi'}`:'Nessuna lezione'}</small></span><span class="arrow">›</span></button>${x.lessons.length?`<div class="range-lessons">${x.lessons.map(l=>`<button class="range-lesson" onclick="openLesson('${l.id}')"><span class="range-time">${lessonTimeRange(l)}</span><span><b>${esc(lessonStudentNames(l))}</b><small>${l.mode==='dad'?'DAD':'Presenza'} · ${lessonTypeLabel(l)} · ${lessonUnitsLabel(l)}${l.seriesId?' · Ricorrente':''}</small></span><span class="range-mode ${l.mode==='dad'?'dad':'presence'}">${l.mode==='dad'?'DAD':'Aula'}</span></button>`).join('')}</div>`:''}</div>`).join('')}</div>`);
+  replaceModal(`<h2>Prossimi 30 giorni</h2><p class="sub">Dal ${fmtDate(start)} al ${fmtDate(end)}. Qui trovi anche le lezioni create in serie.</p><div class="statrow"><div class="stat"><b>${lessonUnitsTotal}</b><small>Lezioni</small></div><div class="stat"><b>${appointments}</b><small>Posti alunno</small></div><div class="stat"><b>${occupied}</b><small>Giorni occupati</small></div></div><div class="note"><b>Gestione rapida:</b> tocca una lezione per modificarla, annullarla o eliminare anche un solo alunno senza toccare gli altri della collettiva.</div><div class="range30">${days30.map((x,i)=>`<div class="range-day ${i===0?'today-range':''}"><button class="range-head" onclick="renderSummaryModal('${x.dk}',true)"><span class="range-date"><b>${x.d.getDate()}</b><small>${days[x.d.getDay()].slice(0,3)}</small></span><span class="range-title"><b>${fmtDate(x.dk)}</b><small>${x.lessons.length?`${x.lessons.reduce((a,l)=>a+lessonUnitCount(l),0)} lezioni · ${x.lessons.length} ${x.lessons.length===1?'blocco':'blocchi'}`:'Nessuna lezione'}</small></span><span class="arrow">›</span></button>${x.lessons.length?`<div class="range-lessons">${x.lessons.map(l=>`<button class="range-lesson" onclick="openLesson('${l.id}')"><span class="range-time">${lessonTimeRange(l)}</span><span><b>${esc(lessonStudentNames(l))}</b><small>${lessonModeLabel(l)} · ${lessonTypeLabel(l)} · ${lessonUnitsLabel(l)}${l.seriesId?' · Ricorrente':''}</small></span><span class="range-mode ${lessonModeClass(l)}">${lessonModeLabel(l)}</span></button>`).join('')}</div>`:''}</div>`).join('')}</div>`);
 }
 function renderSummaryModal(k,push=false){
   const ls=data.lessons.filter(l=>l.date===k&&l.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));
   const ended=ls.filter(l=>l.status==='scheduled'&&lessonHasEnded(l)),dayUnits=ls.reduce((a,l)=>a+lessonUnitCount(l),0),endedUnits=ended.reduce((a,l)=>a+lessonUnitCount(l),0),dayRevenue=ls.filter(isAccountingLesson).reduce((a,l)=>a+lessonRevenue(l),0),missing=ls.filter(l=>isAccountingLesson(l)&&!hasValidPricing(l)).length;
-  const html=`<h2>Riepilogo</h2><p class="sub">Conferme agli alunni e chiusura contabile della giornata.</p><div class="row"><button class="choice ${k===dateKey(new Date())?'selected':''}" onclick="renderSummaryModal('${dateKey(new Date())}')">Oggi</button><button class="choice ${k===dateKey(new Date(Date.now()+86400000))?'selected':''}" onclick="renderSummaryModal('${dateKey(new Date(Date.now()+86400000))}')">Domani</button></div><div class="field"><label>Oppure scegli una data</label><input class="input" type="date" value="${k}" onchange="renderSummaryModal(this.value)"></div>${ended.length?`<div class="account-alert warning static-alert"><span class="alert-icon">!</span><span><b>${endedUnits} da verificare</b><small>Conferma le lezioni svolte prima di chiudere il giorno.</small></span></div>`:''}${missing?`<div class="account-alert warning static-alert"><span class="alert-icon">€</span><span><b>${missing} senza tariffa</b><small>Apri i dettagli e assegna il prezzo per completare la contabilità.</small></span></div>`:''}<div class="section-title"><h2>${fmtDate(k)}</h2><span style="color:var(--muted);font-size:12px">${dayUnits} lezioni · ${ls.length} ${ls.length===1?'blocco':'blocchi'}${dayRevenue?` · ${fmtEuro(dayRevenue)}`:''}</span></div>${ls.length?ls.map(l=>`<div class="card summary-card"><div class="summary-head"><div><h3>${lessonTimeRange(l)} · ${lessonUnitsLabel(l)}</h3><p>${esc(lessonStudentNames(l))}<br>${l.mode==='dad'?'💻 DAD':'🏠 Presenza'} · ${lessonIsCollective(l)?'👥 Collettiva · '+l.studentIds.length+' alunni':'👤 Individuale'} · <b>${lessonStatusText(l)}</b><br>${lessonPricingShort(l)}</p></div><span class="pill ${l.mode==='dad'?'dad':'presence'}">${l.mode==='dad'?'DAD':'Presenza'}</span></div><div class="sendgrid">${l.status==='scheduled'&&!lessonHasEnded(l)?`<button class="smallbtn wa" onclick="openSendForLesson('${l.id}')">Invia messaggi</button>`:`<button class="smallbtn" onclick="openLesson('${l.id}')">Contabilità</button>`}<button class="smallbtn" onclick="openLesson('${l.id}')">Dettagli</button></div></div>`).join(''):`<div class="card empty">Nessuna lezione per questa data.</div>`}${ended.length?`<button class="cta" onclick="closeDay('${k}')">✓ Chiudi giornata</button>`:''}${ls.length?`<button class="cta secondary" onclick="copyDaySummary('${k}')">Copia riepilogo completo</button>`:''}`;
+  const html=`<h2>Riepilogo</h2><p class="sub">Conferme agli alunni e chiusura contabile della giornata.</p><div class="row"><button class="choice ${k===dateKey(new Date())?'selected':''}" onclick="renderSummaryModal('${dateKey(new Date())}')">Oggi</button><button class="choice ${k===dateKey(new Date(Date.now()+86400000))?'selected':''}" onclick="renderSummaryModal('${dateKey(new Date(Date.now()+86400000))}')">Domani</button></div><div class="field"><label>Oppure scegli una data</label><input class="input" type="date" value="${k}" onchange="renderSummaryModal(this.value)"></div>${ended.length?`<div class="account-alert warning static-alert"><span class="alert-icon">!</span><span><b>${endedUnits} da verificare</b><small>Conferma le lezioni svolte prima di chiudere il giorno.</small></span></div>`:''}${missing?`<div class="account-alert warning static-alert"><span class="alert-icon">€</span><span><b>${missing} senza tariffa</b><small>Apri i dettagli e assegna il prezzo per completare la contabilità.</small></span></div>`:''}<div class="section-title"><h2>${fmtDate(k)}</h2><span style="color:var(--muted);font-size:12px">${dayUnits} lezioni · ${ls.length} ${ls.length===1?'blocco':'blocchi'}${dayRevenue?` · ${fmtEuro(dayRevenue)}`:''}</span></div>${ls.length?ls.map(l=>`<div class="card summary-card"><div class="summary-head"><div><h3>${lessonTimeRange(l)} · ${lessonUnitsLabel(l)}</h3><p>${esc(lessonStudentNames(l))}<br>${lessonModeIconLabel(l)} · ${lessonIsCollective(l)?'👥 Collettiva · '+l.studentIds.length+' alunni':'👤 Individuale'} · <b>${lessonStatusText(l)}</b><br>${lessonPricingShort(l)}</p></div><span class="pill ${lessonModeClass(l)}">${lessonModeLabel(l)}</span></div><div class="sendgrid">${l.status==='scheduled'&&!lessonHasEnded(l)?`<button class="smallbtn wa" onclick="openSendForLesson('${l.id}')">Invia messaggi</button>`:`<button class="smallbtn" onclick="openLesson('${l.id}')">Contabilità</button>`}<button class="smallbtn" onclick="openLesson('${l.id}')">Dettagli</button></div></div>`).join(''):`<div class="card empty">Nessuna lezione per questa data.</div>`}${ended.length?`<button class="cta" onclick="closeDay('${k}')">✓ Chiudi giornata</button>`:''}${ls.length?`<button class="cta secondary" onclick="copyDaySummary('${k}')">Copia riepilogo completo</button>`:''}`;
   if(push)showModal(html);else replaceModal(html);
 }
 function closeDay(k){
@@ -1335,11 +1378,11 @@ function closeDay(k){
   if(!confirm(`Segnare come svolte tutte le ${pendingUnits} lezioni contenute in ${pending.length} ${pending.length===1?'blocco':'blocchi'} ancora da verificare? Potrai correggerle in seguito.`))return;
   pending.forEach(l=>{l.status='completed';l.completedAt=new Date().toISOString();l.updatedAt=new Date().toISOString()});save('Chiusura giornata');renderSummaryModal(k);toast('Giornata chiusa e conteggiata');
 }
-async function copyDaySummary(k){const ls=data.lessons.filter(l=>l.date===k&&l.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));const txt=`Riepilogo lezioni - ${fmtDate(k)}\n\n`+ls.map(l=>`${lessonTimeRange(l)} - ${lessonStudentNames(l)} - ${l.mode==='dad'?'DAD':'Presenza'} - ${lessonTypeLabel(l)} - ${lessonUnitsLabel(l)} - ${lessonPricingShort(l)} - ${lessonStatusText(l)}`).join('\n');try{await navigator.clipboard.writeText(txt);toast('Riepilogo copiato')}catch{prompt('Copia il riepilogo:',txt)}}
+async function copyDaySummary(k){const ls=data.lessons.filter(l=>l.date===k&&l.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));const txt=`Riepilogo lezioni - ${fmtDate(k)}\n\n`+ls.map(l=>`${lessonTimeRange(l)} - ${lessonStudentNames(l)} - ${lessonModeLabel(l)} - ${lessonTypeLabel(l)} - ${lessonUnitsLabel(l)} - ${lessonPricingShort(l)} - ${lessonStatusText(l)}`).join('\n');try{await navigator.clipboard.writeText(txt);toast('Riepilogo copiato')}catch{prompt('Copia il riepilogo:',txt)}}
 function openReconciliation(push=false){
   const pending=pendingPastLessons(),pendingUnits=pending.reduce((a,l)=>a+lessonUnitCount(l),0);
   if(!pending.length){toast('Contabilità aggiornata: nulla da verificare');return}
-  const html=`<h2>Verifica ${pendingUnits} lezioni</h2><p class="sub">Queste lezioni sono passate ma non ancora confermate. Finché restano qui non entrano nei conteggi.</p><div class="note"><b>Regola di sicurezza:</b> scegli cosa è realmente successo per ogni appuntamento.</div>${pending.map(l=>`<div class="card"><div class="summary-head"><div><h3>${fmtDate(l.date)} · ${l.time}</h3><p>${esc(lessonStudentNames(l))}<br>${lessonTimeRange(l)} · ${lessonUnitsLabel(l)} · ${l.mode==='dad'?'DAD':'Presenza'} · ${lessonPricingShort(l)}</p></div><span class="status s-requested">DA VERIFICARE</span></div><div class="status-actions compact-status"><button class="smallbtn wa" onclick="reconcileOne('${l.id}','completed')">✅ Svolta</button><button class="smallbtn" onclick="openAbsentOptions('${l.id}')">👤 Assente</button><button class="smallbtn" onclick="reconcileOne('${l.id}','recovery')">↻ Recupero</button><button class="smallbtn" onclick="reconcileOne('${l.id}','cancelled')">✕ Annullata</button></div></div>`).join('')}<button class="cta" onclick="reconcileAllCompleted()">Segna tutte come svolte</button>`;
+  const html=`<h2>Verifica ${pendingUnits} lezioni</h2><p class="sub">Queste lezioni sono passate ma non ancora confermate. Finché restano qui non entrano nei conteggi.</p><div class="note"><b>Regola di sicurezza:</b> scegli cosa è realmente successo per ogni appuntamento.</div>${pending.map(l=>`<div class="card"><div class="summary-head"><div><h3>${fmtDate(l.date)} · ${l.time}</h3><p>${esc(lessonStudentNames(l))}<br>${lessonTimeRange(l)} · ${lessonUnitsLabel(l)} · ${lessonModeLabel(l)} · ${lessonPricingShort(l)}</p></div><span class="status s-requested">DA VERIFICARE</span></div><div class="status-actions compact-status"><button class="smallbtn wa" onclick="reconcileOne('${l.id}','completed')">✅ Svolta</button><button class="smallbtn" onclick="openAbsentOptions('${l.id}')">👤 Assente</button><button class="smallbtn" onclick="reconcileOne('${l.id}','recovery')">↻ Recupero</button><button class="smallbtn" onclick="reconcileOne('${l.id}','cancelled')">✕ Annullata</button></div></div>`).join('')}<button class="cta" onclick="reconcileAllCompleted()">Segna tutte come svolte</button>`;
   if(push)showModal(html);else replaceModal(html);
 }
 function reconcileOne(id,status){const l=data.lessons.find(x=>x.id===id);if(!l)return;if(!lessonMonthOpen(l,'verificare la lezione'))return;l.status=status;l.updatedAt=new Date().toISOString();delete l.countAbsent;if(status==='completed')l.completedAt=new Date().toISOString();else delete l.completedAt;if(status==='cancelled')l.cancelledAt=new Date().toISOString();else delete l.cancelledAt;if(status==='recovery')l.recoveryMarkedAt=new Date().toISOString();save('Verifica lezione');if(pendingPastLessons().length)openReconciliation();else {if(modalStack.length)modalBack();else closeModal();toast('Tutto verificato')}}
@@ -1353,7 +1396,7 @@ function paymentInfo(sid,mk){
   const ls=[...completedLs,...absentBilled];
   const pending=data.lessons.filter(l=>l.studentIds.includes(sid)&&l.date.startsWith(mk)&&l.status==='scheduled'&&lessonHasEnded(l));
   const monthlyActivity=data.lessons.filter(l=>l.studentIds.includes(sid)&&l.date.startsWith(mk)&&studentIsMonthlyInLesson(l,sid)&&l.status!=='cancelled');
-  const dadLs=completedLs.filter(l=>l.mode==='dad'),presenceLs=completedLs.filter(l=>l.mode==='presence'),dad=dadLs.reduce((a,l)=>a+l.duration/60,0),presence=presenceLs.reduce((a,l)=>a+l.duration/60,0),dadCount=dadLs.reduce((a,l)=>a+lessonUnitCount(l),0),presenceCount=presenceLs.reduce((a,l)=>a+lessonUnitCount(l),0),completedCount=completedLs.reduce((a,l)=>a+lessonUnitCount(l),0),absentBilledCount=absentBilled.reduce((a,l)=>a+lessonUnitCount(l),0);
+  const dadLs=completedLs.filter(l=>lessonModeForStudent(l,sid)==='dad'),presenceLs=completedLs.filter(l=>lessonModeForStudent(l,sid)==='presence'),dad=dadLs.reduce((a,l)=>a+l.duration/60,0),presence=presenceLs.reduce((a,l)=>a+l.duration/60,0),dadCount=dadLs.reduce((a,l)=>a+lessonUnitCount(l),0),presenceCount=presenceLs.reduce((a,l)=>a+lessonUnitCount(l),0),completedCount=completedLs.reduce((a,l)=>a+lessonUnitCount(l),0),absentBilledCount=absentBilled.reduce((a,l)=>a+lessonUnitCount(l),0);
   const monthlyLesson=monthlyActivity[0]||null;
   const planType=p.planType==='monthly'||!!monthlyLesson?'monthly':'lesson';
   let monthlyAmount=0;
@@ -1406,12 +1449,12 @@ function reopenMonth(mk){
 function openMissingPricing(mk=null){
   const ls=data.lessons.filter(l=>(!mk||l.date.startsWith(mk))&&isAccountingLesson(l)&&!hasValidPricing(l)).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
   if(!ls.length){toast('Tutte le lezioni hanno una tariffa');return}
-  showModal(`<h2>Tariffe da completare</h2><p class="sub">Sono lezioni storiche salvate prima dell'introduzione dei prezzi. Non assegno importi a caso: scegli tu la tariffa corretta.</p>${ls.map(l=>`<div class="ledger-row" onclick="openLesson('${l.id}')"><span><b>${fmtDate(l.date)} · ${l.time}</b><small>${esc(lessonStudentNames(l))} · ${l.mode==='dad'?'DAD':'Presenza'} · ${lessonTypeLabel(l)}</small></span><strong>Imposta €</strong></div>`).join('')}`);
+  showModal(`<h2>Tariffe da completare</h2><p class="sub">Sono lezioni storiche salvate prima dell'introduzione dei prezzi. Non assegno importi a caso: scegli tu la tariffa corretta.</p>${ls.map(l=>`<div class="ledger-row" onclick="openLesson('${l.id}')"><span><b>${fmtDate(l.date)} · ${l.time}</b><small>${esc(lessonStudentNames(l))} · ${lessonModeLabel(l)} · ${lessonTypeLabel(l)}</small></span><strong>Imposta €</strong></div>`).join('')}`);
 }
 function openPayment(sid,mk,replace=false){
   const x=paymentInfo(sid,mk),st=x.student,p=x.p,changed=paymentChanged(x),effective=effectivePaymentAmount(x),locked=isMonthClosed(mk);
   const editable=!locked;
-  const html=`<h2>${esc(st.name)}</h2><p class="sub">Pagamento ${fmtMonth(mk)} · ${x.planType==='monthly'?'Piano mensile':'A lezione'}</p>${locked?`<div class="month-lock"><b>🔒 Mese chiuso</b><small>Riapri ${fmtMonth(mk)} dalla schermata Pagamenti per fare modifiche.</small></div>`:''}${x.pending.length?`<button class="account-alert warning static-alert" onclick="openReconciliation(true)"><span class="alert-icon">!</span><span><b>${x.pending.length} lezioni da verificare</b><small>Non sono ancora incluse nei conteggi qui sotto.</small></span><span class="arrow">›</span></button>`:''}${x.missingPrice.length?`<button class="account-alert warning static-alert" onclick="openMissingPricing('${mk}')"><span class="alert-icon">€</span><span><b>${x.missingPrice.length} lezioni senza tariffa</b><small>Il totale automatico è incompleto finché non assegni il prezzo.</small></span><span class="arrow">›</span></button>`:''}${changed?`<div class="note warning-note"><b>Attenzione:</b> il mese è stato modificato dopo che era stato segnato pagato. Verifica lezioni e importo.</div>`:''}<div class="statrow"><div class="stat"><b>${x.completedCount}</b><small>Lezioni svolte</small></div><div class="stat"><b>${x.presenceLessons}/${x.dadLessons}</b><small>Presenza / DAD</small></div><div class="stat"><b>${fmtHours(x.hours)}</b><small>Ore</small></div></div>${paymentBreakdownHtml(x)}<div class="payment-total-line"><span>Totale calcolato</span><b>${fmtEuro(x.autoAmount)}</b></div>${editable?`<div class="field"><label>Totale da inviare (modificabile)</label><input class="input" id="payAmount" inputmode="decimal" value="${esc(p.amount||'')}" placeholder="Lascia vuoto per usare ${fmtEuro(x.autoAmount)}"></div><button class="cta secondary" onclick="savePaymentAmount('${sid}','${mk}')">Applica totale scelto</button>`:String(p.amount??'').trim()!==''?`<div class="note"><b>Totale manuale applicato:</b> ${fmtEuro(effective)}</div>`:''}<div class="payment-total-big"><span>Totale da inviare</span><b>${fmtEuro(effective)}</b></div>${editable?`<div class="sendgrid"><button class="smallbtn wa" onclick="sendPayment('${sid}','${mk}','student')">WhatsApp alunno</button>${st.parentPhone?`<button class="smallbtn wa" onclick="sendPayment('${sid}','${mk}','parent')">WhatsApp genitore</button>`:'<button class="smallbtn" disabled>Nessun genitore</button>'}</div><div class="choices" style="margin-top:10px"><button class="choice ${p.status==='requested'?'selected':''}" onclick="setPaymentStatus('${sid}','${mk}','requested')">🟡 Non pagato</button><button class="choice ${p.status==='paid'?'selected':''}" onclick="setPaymentStatus('${sid}','${mk}','paid')">🟢 Pagato</button></div><button class="cta danger" onclick="setPaymentStatus('${sid}','${mk}','due')">Segna da inviare</button>`:''}<div class="section-title"><h2>Registro contabile</h2><span style="color:var(--muted);font-size:12px">${x.completedCount} svolte${x.absentBilledCount?` · ${x.absentBilledCount} ass.`:''}</span></div>${x.ls.length?x.ls.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(l=>`<div class="ledger-row" onclick="openLesson('${l.id}')"><span><b>${fmtDate(l.date)}</b><small>${lessonTimeRange(l)} · ${lessonUnitsLabel(l)} · ${l.mode==='dad'?'DAD':'Presenza'} · ${lessonTypeLabel(l)} · ${lessonStatusText(l)} · ${studentIsMonthlyInLesson(l,sid)?'Mensile':hasValidPricing(l)?rateLabel(l.rateType):'Tariffa mancante'}</small></span><strong>${studentIsMonthlyInLesson(l,sid)?'Mensile':hasValidPricing(l)?fmtEuro(lessonChargeForStudent(l,sid)):'—'}</strong></div>`).join(''):'<div class="empty">Nessuna lezione conteggiata.</div>'}`;
+  const html=`<h2>${esc(st.name)}</h2><p class="sub">Pagamento ${fmtMonth(mk)} · ${x.planType==='monthly'?'Piano mensile':'A lezione'}</p>${locked?`<div class="month-lock"><b>🔒 Mese chiuso</b><small>Riapri ${fmtMonth(mk)} dalla schermata Pagamenti per fare modifiche.</small></div>`:''}${x.pending.length?`<button class="account-alert warning static-alert" onclick="openReconciliation(true)"><span class="alert-icon">!</span><span><b>${x.pending.length} lezioni da verificare</b><small>Non sono ancora incluse nei conteggi qui sotto.</small></span><span class="arrow">›</span></button>`:''}${x.missingPrice.length?`<button class="account-alert warning static-alert" onclick="openMissingPricing('${mk}')"><span class="alert-icon">€</span><span><b>${x.missingPrice.length} lezioni senza tariffa</b><small>Il totale automatico è incompleto finché non assegni il prezzo.</small></span><span class="arrow">›</span></button>`:''}${changed?`<div class="note warning-note"><b>Attenzione:</b> il mese è stato modificato dopo che era stato segnato pagato. Verifica lezioni e importo.</div>`:''}<div class="statrow"><div class="stat"><b>${x.completedCount}</b><small>Lezioni svolte</small></div><div class="stat"><b>${x.presenceLessons}/${x.dadLessons}</b><small>Presenza / DAD</small></div><div class="stat"><b>${fmtHours(x.hours)}</b><small>Ore</small></div></div>${paymentBreakdownHtml(x)}<div class="payment-total-line"><span>Totale calcolato</span><b>${fmtEuro(x.autoAmount)}</b></div>${editable?`<div class="field"><label>Totale da inviare (modificabile)</label><input class="input" id="payAmount" inputmode="decimal" value="${esc(p.amount||'')}" placeholder="Lascia vuoto per usare ${fmtEuro(x.autoAmount)}"></div><button class="cta secondary" onclick="savePaymentAmount('${sid}','${mk}')">Applica totale scelto</button>`:String(p.amount??'').trim()!==''?`<div class="note"><b>Totale manuale applicato:</b> ${fmtEuro(effective)}</div>`:''}<div class="payment-total-big"><span>Totale da inviare</span><b>${fmtEuro(effective)}</b></div>${editable?`<div class="sendgrid"><button class="smallbtn wa" onclick="sendPayment('${sid}','${mk}','student')">WhatsApp alunno</button>${st.parentPhone?`<button class="smallbtn wa" onclick="sendPayment('${sid}','${mk}','parent')">WhatsApp genitore</button>`:'<button class="smallbtn" disabled>Nessun genitore</button>'}</div><div class="choices" style="margin-top:10px"><button class="choice ${p.status==='requested'?'selected':''}" onclick="setPaymentStatus('${sid}','${mk}','requested')">🟡 Non pagato</button><button class="choice ${p.status==='paid'?'selected':''}" onclick="setPaymentStatus('${sid}','${mk}','paid')">🟢 Pagato</button></div><button class="cta danger" onclick="setPaymentStatus('${sid}','${mk}','due')">Segna da inviare</button>`:''}<div class="section-title"><h2>Registro contabile</h2><span style="color:var(--muted);font-size:12px">${x.completedCount} svolte${x.absentBilledCount?` · ${x.absentBilledCount} ass.`:''}</span></div>${x.ls.length?x.ls.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(l=>`<div class="ledger-row" onclick="openLesson('${l.id}')"><span><b>${fmtDate(l.date)}</b><small>${lessonTimeRange(l)} · ${lessonUnitsLabel(l)} · ${modeLabelForStudent(l,sid)} · ${lessonTypeLabel(l)} · ${lessonStatusText(l)} · ${studentIsMonthlyInLesson(l,sid)?'Mensile':hasValidPricing(l)?rateLabel(l.rateType):'Tariffa mancante'}</small></span><strong>${studentIsMonthlyInLesson(l,sid)?'Mensile':hasValidPricing(l)?fmtEuro(lessonChargeForStudent(l,sid)):'—'}</strong></div>`).join(''):'<div class="empty">Nessuna lezione conteggiata.</div>'}`;
   if(replace)replaceModal(html);else showModal(html);
 }
 function savePaymentAmount(sid,mk){
@@ -1452,7 +1495,7 @@ function openPaymentReminder(force=false){
 function exportMonthCSV(mk){
   const rows=[['Data','Ora_inizio','Ora_fine','Alunno','Modalita','Lezioni_consecutive','Durata_singola_min','Durata_totale_min','Tipo','Piano','Tariffa','Prezzo_singola_lezione','Totale_blocco_alunno','Quota_mensile','Stato_lezione','Totale_mese_calcolato','Totale_mese_manuale','Stato_pagamento']];
   data.lessons.filter(l=>l.date.startsWith(mk)).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).forEach(l=>{
-    l.studentIds.forEach(sid=>{const st=studentById(sid),x=paymentInfo(sid,mk),p=x.p,monthly=studentIsMonthlyInLesson(l,sid);rows.push([l.date,l.time,endTimeFromStart(l.time,l.duration),st?.name||'Alunno archiviato',l.mode==='dad'?'DAD':'Presenza',lessonUnitCount(l),lessonBaseMinutes(l),l.duration,lessonTypeLabel(l),monthly?'Mensile':'A lezione',monthly?'Mensile':rateLabel(l.rateType),monthly?'':lessonPriceForStudent(l,sid),monthly?'':lessonChargeForStudent(l,sid),monthly?(l.monthlyAmountsByStudent?.[sid]||x.monthlyAmount):'',lessonStatusText(l),x.autoAmount,p.amount||'',p.status==='paid'?'Pagato':p.status==='requested'?'Non pagato':'Da inviare'])});
+    l.studentIds.forEach(sid=>{const st=studentById(sid),x=paymentInfo(sid,mk),p=x.p,monthly=studentIsMonthlyInLesson(l,sid);rows.push([l.date,l.time,endTimeFromStart(l.time,l.duration),st?.name||'Alunno archiviato',modeLabelForStudent(l,sid),lessonUnitCount(l),lessonBaseMinutes(l),l.duration,lessonTypeLabel(l),monthly?'Mensile':'A lezione',monthly?'Mensile':rateLabel(l.rateType),monthly?'':lessonPriceForStudent(l,sid),monthly?'':lessonChargeForStudent(l,sid),monthly?(l.monthlyAmountsByStudent?.[sid]||x.monthlyAmount):'',lessonStatusText(l),x.autoAmount,p.amount||'',p.status==='paid'?'Pagato':p.status==='requested'?'Non pagato':'Da inviare'])});
   });
   const csv='\ufeff'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');downloadBlob(csv,`registro-lezioni-${mk}.csv`,'text/csv;charset=utf-8');toast('Registro mensile esportato');
 }
