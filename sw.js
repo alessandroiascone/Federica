@@ -1,4 +1,4 @@
-const CACHE = 'lezioni-matematica-v7-9-1-merge-backup';
+const CACHE = 'lezioni-matematica-v7-9-2-pallini-planner';
 const APP_SHELL = [
   './',
   './index.html',

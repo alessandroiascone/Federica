@@ -654,17 +654,65 @@ function futureStartAllowedForToday(dk,t){
   const now=new Date(),mins=now.getHours()*60+now.getMinutes();
   return timeToMinutes(t)>=Math.ceil(mins/30)*30;
 }
+function dayFreeBlocks(dk,dayLessons){
+  const windows=[[timeToMinutes('09:00'),timeToMinutes('13:00')],[timeToMinutes('16:00'),timeToMinutes('20:00')]];
+  const now=new Date(),today=dateKey(now),roundNow=Math.ceil((now.getHours()*60+now.getMinutes())/30)*30;
+  const occupied=dayLessons.map(l=>[timeToMinutes(l.time),timeToMinutes(l.time)+(Number(l.duration)||60)]).sort((a,b)=>a[0]-b[0]);
+  const merged=[];
+  occupied.forEach(([s,e])=>{const last=merged[merged.length-1];if(last&&s<=last[1])last[1]=Math.max(last[1],e);else merged.push([s,e])});
+  const blocks=[];
+  windows.forEach(([ws,we])=>{
+    let cursor=dk===today?Math.max(ws,roundNow):ws;
+    if(cursor>=we)return;
+    merged.forEach(([s,e])=>{
+      if(e<=cursor||s>=we)return;
+      const cs=Math.max(s,ws),ce=Math.min(e,we);
+      if(cs>cursor&&cs-cursor>=60)blocks.push([cursor,cs]);
+      cursor=Math.max(cursor,ce);
+    });
+    if(we-cursor>=60)blocks.push([cursor,we]);
+  });
+  return blocks;
+}
+function minutesToClock(m){return `${pad(Math.floor(m/60))}:${pad(m%60)}`}
 function dayAvailabilityInfo(dk){
   const dayLessons=data.lessons.filter(l=>l.date===dk&&l.status!=='cancelled');
-  const freeStarts=allowedLessonTimes().filter(t=>futureStartAllowedForToday(dk,t)&&timeFitsAvailability(t,60)&&!dayLessons.some(l=>timeRangesOverlap(t,60,l.time,l.duration)));
+  const freeBlocks=dayFreeBlocks(dk,dayLessons);
+  const freeStarts=[];
+  freeBlocks.forEach(([s,e])=>{for(let m=s;m+60<=e;m+=30)freeStarts.push(minutesToClock(m))});
   const collectiveSlots=dayLessons.filter(l=>lessonIsCollective(l)&&l.studentIds.length<MAX_COLLECTIVE_STUDENTS&&futureStartAllowedForToday(dk,l.time)&&timeFitsAvailability(l.time,Number(l.duration)||60)).map(l=>({lesson:l,freePlaces:MAX_COLLECTIVE_STUDENTS-l.studentIds.length}));
-  return {available:freeStarts.length>0||collectiveSlots.length>0,freeStarts,collectiveSlots};
+  const available=freeStarts.length>0||collectiveSlots.length>0;
+  const freeMinutes=freeBlocks.reduce((a,[s,e])=>a+(e-s),0);
+  const maxFreeBlock=freeBlocks.reduce((m,[s,e])=>Math.max(m,e-s),0);
+  const maxCollectiveDuration=collectiveSlots.reduce((m,x)=>Math.max(m,Number(x.lesson.duration)||60),0);
+  const maxOptionMinutes=Math.max(maxFreeBlock,maxCollectiveDuration);
+  const collectivePlaces=collectiveSlots.reduce((a,x)=>a+x.freePlaces,0);
+  let status='full',statusLabel='Piena',statusDetail='Nessuna disponibilità di almeno 1 ora';
+  if(available){
+    if(maxOptionMinutes<=60){status='onehour';statusLabel='Solo 1h';statusDetail='Sono rimaste solo disponibilità da 1 ora'}
+    else if(freeMinutes<=120 || (freeMinutes===0&&(collectiveSlots.length<=2||collectivePlaces<=2)) || (freeStarts.length<=3&&collectiveSlots.length<=1)){
+      status='limited';statusLabel='Poca';statusDetail='Disponibilità quasi esaurita';
+    }else{status='good';statusLabel='Buona';statusDetail='Buona disponibilità'}
+  }
+  return {available,status,statusLabel,statusDetail,freeBlocks,freeStarts,collectiveSlots,freeMinutes,maxOptionMinutes};
+}
+function openAvailabilityPlanner(){
+  const now=new Date(),rows=[];
+  for(let i=0;i<14;i++){
+    const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i),dk=dateKey(d),info=dayAvailabilityInfo(dk);
+    const blocks=info.freeBlocks.map(([s,e])=>`${minutesToClock(s)}–${minutesToClock(e)}`);
+    const blockText=blocks.length?blocks.join(' · '):'Nessun blocco libero';
+    const collectiveText=info.collectiveSlots.length?` · ${info.collectiveSlots.length} ${info.collectiveSlots.length===1?'collettiva con posto':'collettive con posti'}`:'';
+    rows.push(`<button class="planner-day ${info.status}" onclick="openDayAvailability('${dk}')"><span class="planner-date"><b>${d.getDate()}</b><small>${days[d.getDay()].slice(0,3)}</small></span><span class="planner-info"><b>${info.statusLabel}</b><small>${esc(blockText+collectiveText)}</small></span><span class="availability-dot ${info.status}"></span></button>`);
+  }
+  showModal(`<h2>Planner disponibilità</h2><p class="sub">Prossimi 14 giorni · 09:00–13:00 e 16:00–20:00.</p><div class="planner-legend"><span><i class="good"></i>Buona</span><span><i class="limited"></i>Poca</span><span><i class="onehour"></i>Solo 1h</span><span><i class="full"></i>Piena</span></div><div class="planner-list">${rows.join('')}</div>`);
 }
 function openDayAvailability(dk){
   const info=dayAvailabilityInfo(dk);
   const freeHtml=info.freeStarts.length?`<div class="section-title"><h2>Orari liberi</h2><span style="color:var(--muted);font-size:12px">almeno 1 ora</span></div><div class="availability-pills">${info.freeStarts.map(t=>`<button class="availability-slot free" onclick="startLessonFromAvailability('${dk}','${t}','free')"><b>${t}–${endTimeFromStart(t,60)}</b><small>Libero · aggiungi lezione</small></button>`).join('')}</div>`:'';
   const collHtml=info.collectiveSlots.length?`<div class="section-title"><h2>Collettive con posto</h2><span style="color:var(--muted);font-size:12px">max ${MAX_COLLECTIVE_STUDENTS}</span></div><div class="availability-pills">${info.collectiveSlots.map(x=>`<button class="availability-slot collective" onclick="startLessonFromAvailability('${dk}','${x.lesson.time}','collective','${x.lesson.id}')"><b>${x.lesson.time} · ${x.lesson.studentIds.length}/${MAX_COLLECTIVE_STUDENTS}</b><small>${x.freePlaces} ${x.freePlaces===1?'posto libero':'posti liberi'} · ${lessonModeLabel(x.lesson)}</small></button>`).join('')}</div>`:'';
-  showModal(`<h2>Disponibilità</h2><p class="sub">${fmtDate(dk)} · orari di lavoro 09:00–13:00 e 16:00–20:00.</p>${info.available?`<div class="availability-banner ok"><span class="availability-status-dot"></span><b>Ci sono disponibilità</b></div>${freeHtml}${collHtml}`:`<div class="availability-banner full"><span class="availability-status-dot"></span><div><b>Disponibilità terminate</b><small>Nessun blocco libero di almeno 1 ora e nessuna collettiva con posti disponibili.</small></div></div>`}<button class="cta secondary" onclick="modalBack()">Indietro</button>`);
+  const bannerClass=info.status==='good'?'ok':info.status;
+  showModal(`<h2>Disponibilità</h2><p class="sub">${fmtDate(dk)} · orari di lavoro 09:00–13:00 e 16:00–20:00.</p><div class="availability-banner ${bannerClass}"><span class="availability-status-dot"></span><div><b>${info.statusLabel}</b><small>${info.statusDetail}</small></div></div>${info.available?freeHtml+collHtml:`<div class="note warning-note">Nessun blocco libero di almeno 1 ora e nessuna collettiva con posti disponibili.</div>`}<button class="cta secondary" onclick="modalBack()">Indietro</button>`);
 }
 function startLessonFromAvailability(dk,t,kind,targetId=''){
   closeModal();
@@ -711,7 +759,7 @@ function renderHome(){
     const detail=first?`${first.time} · ${names}${x.lessons.length>1?` · +${x.lessons.length-1} altra/e`:''}`:'Nessuna lezione';
     const mode=first?`${lessonModeLabel(first)}${lessonIsCollective(first)?' · collettiva':''}`:'Nessuna lezione programmata';
     const dayUnits=x.lessons.reduce((a,l)=>a+lessonUnitCount(l),0),availability=dayAvailabilityInfo(x.dk);
-    return `<div class="week-row ${i===0?'today-row':''} ${x.lessons.length?'has-lessons':''}" onclick="renderSummaryModal('${x.dk}')"><span class="week-date"><b>${x.d.getDate()}</b><small>${days[x.d.getDay()].slice(0,3)}</small></span><span class="week-info"><b>${esc(detail)}</b><small>${esc(mode)}</small></span><span class="week-actions"><span class="week-count">${dayUnits||'–'}</span><button class="availability-dot ${availability.available?'available':'full'}" onclick="event.stopPropagation();openDayAvailability('${x.dk}')" aria-label="${availability.available?'Disponibilità presenti':'Disponibilità terminate'}" title="${availability.available?'Disponibilità presenti':'Disponibilità terminate'}"></button></span></div>`;
+    return `<div class="week-row ${i===0?'today-row':''} ${x.lessons.length?'has-lessons':''}" onclick="renderSummaryModal('${x.dk}')"><span class="week-date"><b>${x.d.getDate()}</b><small>${days[x.d.getDay()].slice(0,3)}</small></span><span class="week-info"><b>${esc(detail)}</b><small>${esc(mode)}</small></span><span class="week-actions"><span class="week-count">${dayUnits||'–'}</span><button class="availability-dot ${availability.status}" onclick="event.stopPropagation();openDayAvailability('${x.dk}')" aria-label="Disponibilità: ${availability.statusLabel}" title="Disponibilità: ${availability.statusLabel}"></button></span></div>`;
   }).join('');
 }
 function lessonCard(l){
