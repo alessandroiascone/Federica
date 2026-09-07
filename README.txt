@@ -29,3 +29,10 @@ V7.7.2
 - Riepilogo WhatsApp settimanale cumulativo per gli appuntamenti appena prenotati dello stesso alunno.
 - Restano disponibili i messaggi singoli per ogni appuntamento.
 - Rimosso il link DAD/Meet fisso: il link si crea e si invia al momento.
+
+
+V7.8 PLANNER DISPONIBILITA
+- Planner 14 giorni
+- Pallini: verde buona, giallo quasi esaurita, blu solo slot 1h, rosso piena
+- Fasce lavoro 09:00-13:00 / 16:00-20:00
+- Collettive max 6

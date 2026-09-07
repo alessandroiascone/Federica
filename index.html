@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Lezioni Matematica</title>
-<meta name="app-version" content="7.5.1">
+<meta name="app-version" content="7.9.1">
 <style>
 :root{
   --bg:#f4f7fb;--card:#ffffff;--ink:#172033;--muted:#7b8498;--line:#e7ebf2;
@@ -1278,18 +1278,77 @@ function saveLessonEdit(id){
   const l=data.lessons.find(x=>x.id===id);if(!l)return;if(!lessonMonthOpen(l,'modificare la lezione'))return;
   const ids=editSelectedStudentIds();if(!ids.length){toast('Seleziona almeno un alunno');return}
   const editType=document.getElementById('editLessonType')?.value||'individual';
-  if(editType==='individual'&&ids.length!==1){toast('La lezione individuale richiede un solo alunno');return}if(editType==='collective'&&ids.length>MAX_COLLECTIVE_STUDENTS){toast(`Una collettiva può avere massimo ${MAX_COLLECTIVE_STUDENTS} alunni`);return}
-  const oldMonthly=lessonMonthlyIds(l),monthlyIds=ids.filter(sid=>oldMonthly.includes(sid)||isMonthlyStudent(sid)),billableIds=ids.filter(sid=>!monthlyIds.includes(sid));
-  const rate=automaticEditRate(l,ids,editType,monthlyIds);
-  const newDate=document.getElementById('editDate').value,monthlyAmountsByStudent={};if(!ensureMonthOpen(newDate.slice(0,7),'spostare la lezione'))return;
-  monthlyIds.forEach(sid=>{monthlyAmountsByStudent[sid]=Number(l.monthlyAmountsByStudent?.[sid])||monthlyAmountForStudent(studentById(sid));ensureMonthlyPayment(sid,newDate.slice(0,7),monthlyAmountsByStudent[sid])});
-  const editBase=Number(document.getElementById('editBaseDuration').value)||60,editUnits=Number(document.getElementById('editLessonUnits').value)||1,editDuration=lessonTotalMinutes(editBase,editUnits),editTime=document.getElementById('editTime').value;
+  if(editType==='individual'&&ids.length!==1){toast('La lezione individuale richiede un solo alunno');return}
+  if(editType==='collective'&&ids.length>MAX_COLLECTIVE_STUDENTS){toast(`Una collettiva può avere massimo ${MAX_COLLECTIVE_STUDENTS} alunni`);return}
+
+  const newDate=document.getElementById('editDate').value;if(!ensureMonthOpen(newDate.slice(0,7),'spostare la lezione'))return;
+  const editBase=Number(document.getElementById('editBaseDuration').value)||60;
+  const editUnits=Number(document.getElementById('editLessonUnits').value)||1;
+  const editDuration=lessonTotalMinutes(editBase,editUnits);
+  const editTime=document.getElementById('editTime').value;
   if(!timeFitsAvailability(editTime,editDuration)){toast('Questo blocco non entra negli orari 09:00–13:00 o 16:00–20:00');return}
+
+  const editedModes=readEditStudentModes(ids,l);
   const conflicts=data.lessons.filter(x=>x.id!==l.id&&x.status!=='cancelled'&&x.date===newDate&&timeRangesOverlap(editTime,editDuration,x.time,x.duration));
-  if(conflicts.length){toast('La modifica si sovrappone a un’altra lezione');return}
-  l.studentIds=ids;l.studentModes=readEditStudentModes(ids,l);syncLessonMode(l);l.monthlyStudentIds=monthlyIds;l.monthlyAmountsByStudent=monthlyAmountsByStudent;l.date=newDate;l.time=editTime;l.baseDuration=editBase;l.lessonUnits=editUnits;l.duration=editDuration;l.lessonType=editType;l.rateType=billableIds.length?rate:'monthly';l.pricePerStudent=billableIds.length?rateAmount(rate):0;l.pricingMissing=false;l.updatedAt=new Date().toISOString();
+  let mergedLessons=[];
+  let finalIds=[...ids];
+  const finalModes={...editedModes};
+
+  if(conflicts.length){
+    const exactSameSlot=conflicts.every(x=>x.time===editTime&&Number(x.duration)===editDuration&&lessonBaseMinutes(x)===editBase&&lessonUnitCount(x)===editUnits);
+    const statusesCompatible=l.status==='scheduled'&&conflicts.every(x=>x.status==='scheduled');
+    if(editType!=='collective'||!exactSameSlot||!statusesCompatible){toast('La modifica si sovrappone a un’altra lezione');return}
+
+    mergedLessons=[...conflicts];
+    for(const other of mergedLessons){
+      for(const sid of other.studentIds||[]){
+        if(!finalIds.includes(sid))finalIds.push(sid);
+        if(!Object.prototype.hasOwnProperty.call(finalModes,sid))finalModes[sid]=lessonModeForStudent(other,sid);
+      }
+    }
+    if(finalIds.length>MAX_COLLECTIVE_STUDENTS){toast(`Unendo le lezioni supereresti il massimo di ${MAX_COLLECTIVE_STUDENTS} alunni`);return}
+  }
+
+  const monthlySet=new Set();
+  const sourceLessons=[l,...mergedLessons];
+  for(const sid of finalIds){
+    if(isMonthlyStudent(sid)||sourceLessons.some(srcL=>lessonMonthlyIds(srcL).includes(sid)))monthlySet.add(sid);
+  }
+  const monthlyIds=[...monthlySet];
+  const monthlyAmountsByStudent={};
+  for(const sid of monthlyIds){
+    let amount=0;
+    for(const srcL of sourceLessons){amount=Number(srcL.monthlyAmountsByStudent?.[sid])||amount}
+    if(!amount)amount=monthlyAmountForStudent(studentById(sid));
+    monthlyAmountsByStudent[sid]=amount;
+    ensureMonthlyPayment(sid,newDate.slice(0,7),amount);
+  }
+  const billableIds=finalIds.filter(sid=>!monthlyIds.includes(sid));
+  const rate=billableIds.length?(editType==='collective'?'collective':automaticEditRate(l,finalIds,editType,monthlyIds)):'monthly';
+
+  l.studentIds=finalIds;
+  l.studentModes=finalModes;
+  syncLessonMode(l);
+  l.monthlyStudentIds=monthlyIds;
+  l.monthlyAmountsByStudent=monthlyAmountsByStudent;
+  l.date=newDate;l.time=editTime;l.baseDuration=editBase;l.lessonUnits=editUnits;l.duration=editDuration;
+  l.lessonType=editType;
+  l.rateType=billableIds.length?rate:'monthly';
+  l.pricePerStudent=billableIds.length?rateAmount(rate):0;
+  l.pricingMissing=false;
+  l.updatedAt=new Date().toISOString();
+
+  if(mergedLessons.length){
+    l.lessonType='collective';
+    l.rateType=billableIds.length?'collective':'monthly';
+    l.pricePerStudent=billableIds.length?10:0;
+    l.mergedFromLessonIds=[...new Set([...(l.mergedFromLessonIds||[]),...mergedLessons.map(x=>x.id)])];
+    data.lessons=data.lessons.filter(x=>!mergedLessons.some(m=>m.id===x.id));
+  }
   if(l.status==='completed'&&!lessonHasEnded(l)){l.status='scheduled';delete l.completedAt}
-  save('Modifica lezione completa');modalStack.pop();openLesson(id,true);toast(editType==='collective'?'Lezione aggiornata come collettiva':'Lezione aggiornata come individuale');
+  save(mergedLessons.length?'Unione lezioni nello stesso slot':'Modifica lezione completa');
+  modalStack.pop();openLesson(id,true);
+  toast(mergedLessons.length?'Lezioni unite in un’unica collettiva':editType==='collective'?'Lezione aggiornata come collettiva':'Lezione aggiornata come individuale');
 }
 function buildMessage(l,s){
   const sid=s.id,kind=lessonModeForStudent(l,sid)==='dad'?'in modalità DAD':'in presenza',group=lessonIsCollective(l)?' La lezione sarà collettiva.':'',units=lessonUnitCount(l)>1?` Sono ${lessonUnitCount(l)} lezioni consecutive da ${durationLabel(lessonBaseMinutes(l))} (${durationLabel(l.duration)} totali).`:'';
@@ -1501,7 +1560,7 @@ function exportMonthCSV(mk){
 }
 function openSettings(){
   const hist=loadHistory(),lastBackup=data.meta?.lastBackupAt;
-  showModal(`<h2>Impostazioni</h2><p class="sub">Orari e sicurezza dei dati.</p><div class="note"><b>🕘 Orari lezioni fissi</b><br>09:00–13:00 · 16:00–20:00<br><small>Le disponibilità vengono calcolate solo dentro queste fasce.</small></div><div class="note"><b>💻 Lezioni DAD</b><br>Il link della videochiamata non viene salvato nel gestionale: puoi crearlo e inviarlo al momento per ogni singola lezione.</div><div class="section-title"><h2>Sicurezza dati</h2></div><div class="note"><b>Ultimo backup esterno:</b> ${lastBackup?fmtDateTime(lastBackup):'mai'}.<br>I salvataggi automatici sul telefono aiutano contro errori, ma non proteggono da perdita/guasto del telefono.</div><div class="sendgrid"><button class="smallbtn" onclick="exportBackup()">⬇ Esporta backup</button><button class="smallbtn" onclick="shareBackup()">↗ Condividi backup</button></div><div class="sendgrid"><button class="smallbtn" onclick="document.getElementById('importFile').click()">⬆ Importa backup</button><button class="smallbtn" onclick="openSafetyHistory()">↶ Cronologia (${hist.length})</button></div>`);
+  showModal(`<h2>Impostazioni</h2><p class="sub">Orari e sicurezza dei dati.</p><div class="note"><b>🕘 Orari lezioni fissi</b><br>09:00–13:00 · 16:00–20:00<br><small>Le disponibilità vengono calcolate solo dentro queste fasce.</small></div><div class="note"><b>💻 Lezioni DAD</b><br>Il link della videochiamata non viene salvato nel gestionale: puoi crearlo e inviarlo al momento per ogni singola lezione.</div><div class="note"><b>⏰ Reminder backup</b><br>Ogni sera alle 19:30. Se l’app non è aperta, compare alla prima apertura successiva.</div><div class="section-title"><h2>Sicurezza dati</h2></div><div class="note"><b>Ultimo backup esterno:</b> ${lastBackup?fmtDateTime(lastBackup):'mai'}.<br>I salvataggi automatici sul telefono aiutano contro errori, ma non proteggono da perdita/guasto del telefono.</div><div class="sendgrid"><button class="smallbtn" onclick="exportBackup()">⬇ Esporta backup</button><button class="smallbtn" onclick="shareBackup()">↗ Condividi backup</button></div><div class="sendgrid"><button class="smallbtn" onclick="document.getElementById('importFile').click()">⬆ Importa backup</button><button class="smallbtn" onclick="openSafetyHistory()">↶ Cronologia (${hist.length})</button></div>`);
 }
 function saveSettings(){data.settings.start='09:00';data.settings.end='20:00';data.settings.step=30;delete data.settings.dadLink;save('Impostazioni');closeModal();toast('Impostazioni salvate')}
 function backupPayload(){return JSON.stringify(data,null,2)}
@@ -1541,8 +1600,33 @@ function checkPaymentReminder(){
   if(now.getDate()>=2&&!sessionStorage.getItem(key)){sessionStorage.setItem(key,'1');setTimeout(()=>{if(!document.getElementById('modal').classList.contains('show'))openPaymentReminder(false)},1200)}
 }
 
+let dailyBackupTimer=null;
+function backupAlreadyDoneToday(){
+  const last=data.meta?.lastBackupAt;if(!last)return false;
+  return dateKey(new Date(last))===dateKey(new Date());
+}
+function openDailyBackupReminder(){
+  if(!data.students.length&&!data.lessons.length)return;
+  if(backupAlreadyDoneToday())return;
+  const today=dateKey(new Date()),storageKey='daily_backup_reminder_seen';
+  if(localStorage.getItem(storageKey)===today)return;
+  const modal=document.getElementById('modal');
+  if(modal?.classList.contains('show')){dailyBackupTimer=setTimeout(checkDailyBackupReminder,60000);return}
+  localStorage.setItem(storageKey,today);
+  showModal(`<h2>💾 Backup serale</h2><p class="sub">Sono le 19:30: salva una copia dei dati di lezioni, alunni e pagamenti.</p><div class="note"><b>Consigliato ogni sera.</b><br>Il backup protegge i dati se il telefono viene perso, sostituito o il browser viene resettato.</div><button class="cta" onclick="exportBackup();closeModal()">⬇ Esporta backup ora</button><button class="cta secondary" onclick="shareBackup();closeModal()">↗ Condividi backup</button><button class="cta secondary" onclick="closeModal()">Non ora</button>`);
+}
+function checkDailyBackupReminder(){
+  if(dailyBackupTimer){clearTimeout(dailyBackupTimer);dailyBackupTimer=null}
+  if(!data.students.length&&!data.lessons.length||backupAlreadyDoneToday())return;
+  const now=new Date(),target=new Date(now.getFullYear(),now.getMonth(),now.getDate(),19,30,0,0);
+  if(now>=target){dailyBackupTimer=setTimeout(openDailyBackupReminder,700);return}
+  dailyBackupTimer=setTimeout(openDailyBackupReminder,Math.max(1000,target.getTime()-now.getTime()));
+}
+
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkDailyBackupReminder()});
+
 migrateData();
-document.addEventListener('DOMContentLoaded',()=>{renderAll();checkAccountingReminder();checkPaymentReminder()});
+document.addEventListener('DOMContentLoaded',()=>{renderAll();checkAccountingReminder();checkPaymentReminder();checkDailyBackupReminder()});
 
 </script>
 
